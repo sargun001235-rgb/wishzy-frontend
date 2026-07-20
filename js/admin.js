@@ -383,26 +383,8 @@ const WishzyAdmin = (() => {
         logShopify('Product pull complete! Refreshing table.');
         showToast('Products imported successfully! 📦', 'success');
         renderProductsTable();
-
-        // Trigger Netlify Build Hook to update the static site globally
-        logShopify('Triggering global Netlify build...');
-        try {
-          // Note: Replace this URL with your actual Netlify Build Hook URL from Netlify Settings -> Build & Deploy
-          const buildHookUrl = 'https://api.netlify.com/build_hooks/6a5e48bf9c461359be68c66b';
-          const hookResponse = await fetch(buildHookUrl, {
-            method: 'POST',
-            body: new URLSearchParams({ trigger_title: 'Shopify Data Pull Update' }),
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-          });
-          if (hookResponse.ok) {
-            logShopify('✅ Global build triggered successfully!');
-            showToast('Site is rebuilding. Changes will be live soon.', 'info');
-          } else {
-            logShopify(`Build hook failed: ${hookResponse.status}`, true);
-          }
-        } catch (hookError) {
-          logShopify(`Build hook error: ${hookError.message}`, true);
-        }
+        
+        logShopify('✅ Products are now instantly live globally via Proxy!');
       } else {
         throw new Error('Failed to fetch from products.json');
       }

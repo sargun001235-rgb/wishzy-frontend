@@ -270,19 +270,18 @@ const WishzyStore = (() => {
 
   /* ── SHOPIFY PUBLIC JSON SYNC ─────────────────────────────── */
   const fetchProductsFromJson = async () => {
-    let shopifyUrl = localStorage.getItem('wishzy_shopify_url');
-    if (!shopifyUrl) return false;
-
     try {
-      shopifyUrl = shopifyUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-      // Append a cache-busting timestamp so clients always fetch fresh products
-      let endpoint = `https://${shopifyUrl}/products.json?limit=250&t=${new Date().getTime()}`;
+      // Fetch securely via the Netlify serverless proxy
+      const response = await fetch('/api/shopify-proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_products' })
+      });
       
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error('Failed to fetch products.json');
+      if (!response.ok) throw new Error('Failed to fetch products from proxy');
       
       const data = await response.json();
-      if (!data.products) return false;
+      if (!data.success || !data.products) return false;
       
       const importedProducts = data.products.map(p => {
         const variant = p.variants && p.variants[0];

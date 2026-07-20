@@ -73,6 +73,13 @@ exports.handler = async (event, context) => {
       return { statusCode: 200, headers, body: JSON.stringify({ success: true, shop: data.data.shop }) };
     }
 
+    if (action === 'get_products') {
+      const endpoint = `https://${storeUrl}/products.json?limit=250`;
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.errors || response.statusText);
+      return { statusCode: 200, headers, body: JSON.stringify({ success: true, products: data.products }) };
+    }
 
     if (action === 'push_order') {
       const resolvedToken = await resolveAccessToken();
