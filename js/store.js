@@ -478,12 +478,10 @@ const WishzyStore = (() => {
 
 window.WishzyStore = WishzyStore;
 
-// Auto-sync products on load if URL is configured
-if (localStorage.getItem('wishzy_shopify_url')) {
-  WishzyStore.fetchProductsFromJson().then(success => {
-    if (success && window.renderProducts) {
-      // If we are on index/collections and they have a render function, re-render
-      window.renderProducts();
-    }
-  });
-}
+// Auto-sync products on load for all users
+WishzyStore.fetchProductsFromJson().then(success => {
+  if (success && window.renderProducts) {
+    // If we are on index/collections and they have a render function, re-render
+    window.renderProducts();
+  }
+});
