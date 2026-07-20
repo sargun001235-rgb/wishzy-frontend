@@ -275,7 +275,8 @@ const WishzyStore = (() => {
 
     try {
       shopifyUrl = shopifyUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-      let endpoint = `https://${shopifyUrl}/products.json?limit=250`;
+      // Append a cache-busting timestamp so clients always fetch fresh products
+      let endpoint = `https://${shopifyUrl}/products.json?limit=250&t=${new Date().getTime()}`;
       
       const response = await fetch(endpoint);
       if (!response.ok) throw new Error('Failed to fetch products.json');

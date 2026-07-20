@@ -26,7 +26,7 @@ const WishzyAdmin = (() => {
     // Update topbar title
     const titles = { dashboard: 'Dashboard Overview', products: 'Product Management', orders: 'Order Management', analytics: 'Analytics & Reports', settings: 'Store Settings' };
     document.getElementById('topbar-title').textContent = titles[id] || 'Dashboard';
-    document.getElementById('topbar-subtitle').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    document.getElementById('topbar-subtitle').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
     // Refresh panel content
     if (id === 'dashboard') renderDashboard();
@@ -64,7 +64,7 @@ const WishzyAdmin = (() => {
           <tr>
             <td><span style="font-family:monospace;font-weight:600">${o.id}</span></td>
             <td>${o.customer.name}<br><small style="color:var(--adm-muted)">${o.customer.mobile}</small></td>
-            <td>${new Date(o.date).toLocaleDateString('en-IN', {day:'2-digit',month:'short'})}</td>
+            <td>${new Date(o.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
             <td><strong>${S.formatPrice(o.total)}</strong></td>
             <td>${getStatusBadge(o.status)}</td>
           </tr>
@@ -78,7 +78,7 @@ const WishzyAdmin = (() => {
       topProdsEl.innerHTML = products.slice(0, 5).map(p => `
         <div class="chart-bar-item">
           <div class="chart-bar-label"><span>${p.title.slice(0, 32)}...</span><span style="color:var(--adm-text)">${S.formatPrice(p.price)}</span></div>
-          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.random()*60+30}%"></div></div>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${Math.random() * 60 + 30}%"></div></div>
         </div>
       `).join('');
     }
@@ -87,10 +87,10 @@ const WishzyAdmin = (() => {
     const actEl = document.getElementById('activity-feed');
     if (actEl) {
       const activities = [
-        { type:'success', text:`<strong>${orders.length} orders</strong> placed since store launch`, time:'Now' },
-        { type:'info', text:`<strong>${products.length} products</strong> currently in catalogue`, time:'Live' },
-        { type:'warning', text:`<strong>${pendingOrders} orders</strong> pending delivery`, time:'Active' },
-        { type:'success', text:`Store is <strong>live and accepting COD orders</strong>`, time:'Active' },
+        { type: 'success', text: `<strong>${orders.length} orders</strong> placed since store launch`, time: 'Now' },
+        { type: 'info', text: `<strong>${products.length} products</strong> currently in catalogue`, time: 'Live' },
+        { type: 'warning', text: `<strong>${pendingOrders} orders</strong> pending delivery`, time: 'Active' },
+        { type: 'success', text: `Store is <strong>live and accepting COD orders</strong>`, time: 'Active' },
       ];
       actEl.innerHTML = activities.map(a => `
         <div class="activity-item">
@@ -151,15 +151,15 @@ const WishzyAdmin = (() => {
         <td>${o.items.length} item(s)</td>
         <td><strong>${S.formatPrice(o.total)}</strong></td>
         <td>${getStatusBadge(o.status)}</td>
-        <td>${new Date(o.date).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'2-digit'})}</td>
+        <td>${new Date(o.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })}</td>
         <td>
           <select class="adm-select" style="padding:5px 8px;font-size:0.75rem;width:140px" onchange="WishzyAdmin.updateStatus('${o.id}', this.value)">
-            <option ${o.status==='Confirmed'?'selected':''}>Confirmed</option>
-            <option ${o.status==='Processing'?'selected':''}>Processing</option>
-            <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
-            <option ${o.status==='Out for Delivery'?'selected':''}>Out for Delivery</option>
-            <option ${o.status==='Delivered'?'selected':''}>Delivered</option>
-            <option ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+            <option ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+            <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+            <option ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+            <option ${o.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+            <option ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+            <option ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
           </select>
         </td>
       </tr>
@@ -189,7 +189,7 @@ const WishzyAdmin = (() => {
       catEl.innerHTML = Object.entries(cats).map(([k, v]) => `
         <div class="chart-bar-item">
           <div class="chart-bar-label"><span>${catNames[k]}</span><span>${v} products</span></div>
-          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(v/total*100).toFixed(0)}%"></div></div>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(v / total * 100).toFixed(0)}%"></div></div>
         </div>
       `).join('');
     }
@@ -202,7 +202,7 @@ const WishzyAdmin = (() => {
       statEl.innerHTML = Object.entries(statuses).map(([s, c]) => `
         <div class="chart-bar-item">
           <div class="chart-bar-label"><span>${s}</span><span>${c} orders</span></div>
-          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(c/orders.length*100).toFixed(0)}%"></div></div>
+          <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(c / orders.length * 100).toFixed(0)}%"></div></div>
         </div>
       `).join('') || '<p style="color:var(--adm-muted);font-size:0.875rem">No order data yet.</p>';
     }
@@ -311,7 +311,7 @@ const WishzyAdmin = (() => {
   };
 
   /* ── SHOPIFY AUTOMATION (SECURE BACKEND & PUBLIC API) ──────── */
-  
+
   const loadShopifyConfig = () => {
     const url = localStorage.getItem('wishzy_shopify_url') || '';
     if (document.getElementById('shopify-url')) {
@@ -326,14 +326,14 @@ const WishzyAdmin = (() => {
       showToast('Please enter a valid Shopify Store URL.', 'warning');
       return;
     }
-    
+
     // Automatically clean up 'https://' and trailing slashes if the user pastes them
     url = url.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-    
+
     localStorage.setItem('wishzy_shopify_url', url);
     // Update the input field to show the cleaned version
     if (document.getElementById('shopify-url')) document.getElementById('shopify-url').value = url;
-    
+
     showToast('Shopify URL Saved! 🌐', 'success');
   };
 
@@ -365,7 +365,7 @@ const WishzyAdmin = (() => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Server error');
-      
+
       logShopify(`Successfully connected to shop: ${data.shop.name}`);
       showToast('Connection successful! 🔗', 'success');
     } catch (e) {
@@ -383,24 +383,24 @@ const WishzyAdmin = (() => {
         logShopify('Product pull complete! Refreshing table.');
         showToast('Products imported successfully! 📦', 'success');
         renderProductsTable();
-        
+
         // Trigger Netlify Build Hook to update the static site globally
         logShopify('Triggering global Netlify build...');
         try {
           // Note: Replace this URL with your actual Netlify Build Hook URL from Netlify Settings -> Build & Deploy
-          const buildHookUrl = 'https://api.netlify.com/build_hooks/YOUR_UNIQUE_ID_HERE'; 
+          const buildHookUrl = 'https://api.netlify.com/build_hooks/6a5e48bf9c461359be68c66b';
           const hookResponse = await fetch(buildHookUrl, {
             method: 'POST',
             body: new URLSearchParams({ trigger_title: 'Shopify Data Pull Update' }),
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
           });
           if (hookResponse.ok) {
-             logShopify('✅ Global build triggered successfully!');
-             showToast('Site is rebuilding. Changes will be live soon.', 'info');
+            logShopify('✅ Global build triggered successfully!');
+            showToast('Site is rebuilding. Changes will be live soon.', 'info');
           } else {
-             logShopify(`Build hook failed: ${hookResponse.status}`, true);
+            logShopify(`Build hook failed: ${hookResponse.status}`, true);
           }
-        } catch(hookError) {
+        } catch (hookError) {
           logShopify(`Build hook error: ${hookError.message}`, true);
         }
       } else {
@@ -419,14 +419,14 @@ const WishzyAdmin = (() => {
       showToast('All orders are already synced.', 'info');
       return;
     }
-    
+
     logShopify(`Found ${orders.length} unsynced orders. Pushing securely...`);
-    
+
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
       try {
         logShopify(`Syncing order ${order.id}...`);
-        
+
         const payload = {
           order: {
             note: "Imported from Wishzy COD via Secure Backend",
@@ -457,12 +457,12 @@ const WishzyAdmin = (() => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'push_order', payload })
         });
-        
+
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Server error');
-        
+
         const shopifyId = data.order.id;
-        
+
         // Mark as synced locally
         const updatedOrder = { ...order, shopifySyncId: shopifyId };
         const allOrders = S.getOrders();
@@ -471,7 +471,7 @@ const WishzyAdmin = (() => {
           allOrders[index] = updatedOrder;
           localStorage.setItem('wishzy_orders', JSON.stringify(allOrders));
         }
-        
+
         logShopify(`Order ${order.id} synced as Real Order #${shopifyId}.`);
       } catch (e) {
         logShopify(`Failed to sync order ${order.id}: ${e.message}`, true);
@@ -514,9 +514,9 @@ const WishzyAdmin = (() => {
         <td>${o.items.length}</td>
         <td><strong>${S.formatPrice(o.total)}</strong></td>
         <td>${getStatusBadge(o.status)}</td>
-        <td>${new Date(o.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'})}</td>
+        <td>${new Date(o.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })}</td>
         <td><select class="adm-select" style="padding:5px 8px;font-size:0.75rem;width:140px" onchange="WishzyAdmin.updateStatus('${o.id}', this.value)">
-          ${['Confirmed','Processing','Shipped','Out for Delivery','Delivered','Cancelled'].map(s => `<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
+          ${['Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'].map(s => `<option ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
         </select></td>
       </tr>
     `).join('') || '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--adm-muted)">No orders found.</td></tr>';
