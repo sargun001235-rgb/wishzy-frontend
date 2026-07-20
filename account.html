@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account | Wishzy</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header-container"></div>
+
+  <!-- MAIN -->
+  <main class="page-main" style="min-height:70vh;padding-top:100px;padding-bottom:60px">
+    <div class="container" style="max-width:800px;margin:0 auto">
+      
+      <!-- LOGIN VIEW -->
+      <div id="account-login-view" style="text-align:center;padding:40px 20px;background:var(--clr-card);border-radius:16px;box-shadow:var(--shadow-sm);border:1px solid var(--clr-border)">
+        <h1 style="font-size:1.8rem;margin-bottom:10px;color:var(--clr-text)">Welcome Back</h1>
+        <p style="color:var(--clr-muted);margin-bottom:30px;font-size:0.95rem">Enter your mobile number to view your orders and track live shipments.</p>
+        
+        <form id="login-form" style="max-width:400px;margin:0 auto" onsubmit="event.preventDefault(); WishzyAccount.login();">
+          <div class="form-group" style="text-align:left">
+            <label class="form-label" for="login-phone">Mobile Number</label>
+            <input type="tel" class="form-input" id="login-phone" placeholder="e.g., 9876543210" required pattern="[0-9]{10}">
+          </div>
+          <button type="submit" class="btn btn--primary btn--full" id="login-btn" style="margin-top:10px">
+            🔓 Secure Login
+          </button>
+        </form>
+      </div>
+
+      <!-- DASHBOARD VIEW (Hidden by default) -->
+      <div id="account-dashboard-view" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px">
+          <h1 style="font-size:1.8rem;color:var(--clr-text)">My Account</h1>
+          <button class="btn btn--ghost" style="font-size:0.85rem;padding:6px 12px" onclick="WishzyAccount.logout()">Logout</button>
+        </div>
+
+        <!-- Orders Section -->
+        <div style="background:var(--clr-card);border-radius:16px;box-shadow:var(--shadow-sm);border:1px solid var(--clr-border);padding:24px">
+          <h2 style="font-size:1.3rem;margin-bottom:20px;color:var(--clr-text);display:flex;align-items:center;gap:10px">
+            📦 Recent Orders
+            <button id="refresh-orders-btn" class="btn btn--ghost" style="padding:4px 8px;font-size:0.8rem;margin-left:auto" onclick="WishzyAccount.fetchOrders()">🔄 Refresh</button>
+          </h2>
+          
+          <div id="orders-list">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <div id="footer-container"></div>
+
+  <!-- SCRIPTS -->
+  <script src="js/store.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/partials.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>

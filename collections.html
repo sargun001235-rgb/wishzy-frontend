@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collections — Wishzy</title>
+  <meta name="description" content="Browse all trending products on Wishzy. Tech Gadgets, Kitchen & Home, Lifestyle, Kids' Products. COD available.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .filter-bar { display:flex; gap:var(--space-sm); flex-wrap:wrap; margin-bottom:var(--space-xl); }
+    .filter-btn { padding:8px 20px; border-radius:var(--radius-full); border:1.5px solid var(--clr-border); background:white; font-size:0.85rem; font-weight:600; color:var(--clr-text-muted); cursor:pointer; transition:all var(--transition-base); }
+    .filter-btn:hover, .filter-btn.active { border-color:var(--clr-accent); color:var(--clr-accent); background:rgba(197,139,88,0.08); }
+    .sort-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--space-lg); }
+    .sort-select { padding:8px 14px; border:1.5px solid var(--clr-border); border-radius:var(--radius-md); background:white; font-size:0.85rem; font-family:inherit; color:var(--clr-text); cursor:pointer; }
+    .product-count { font-size:0.85rem; color:var(--clr-text-muted); }
+  </style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<!-- Page Hero -->
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <span id="breadcrumb-cat">Collections</span>
+    </div>
+    <h1 class="display-2 fade-up" id="page-title">All Collections</h1>
+    <p class="text-muted fade-up stagger-1" id="page-subtitle">Browse our full range of trending, viral products — all available with Cash on Delivery.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn" data-filter="all" onclick="filterProducts('all')">🗂️ All Products</button>
+      <button class="filter-btn" data-filter="tech" onclick="filterProducts('tech')">💻 Tech Gadgets</button>
+      <button class="filter-btn" data-filter="kitchen" onclick="filterProducts('kitchen')">🍳 Kitchen & Home</button>
+      <button class="filter-btn" data-filter="lifestyle" onclick="filterProducts('lifestyle')">✨ Lifestyle</button>
+      <button class="filter-btn" data-filter="kids" onclick="filterProducts('kids')">🎈 Kids' Products</button>
+    </div>
+
+    <!-- Sort + Count -->
+    <div class="sort-bar">
+      <span class="product-count" id="product-count">Loading...</span>
+      <select class="sort-select" id="sort-select" onchange="sortProducts(this.value)">
+        <option value="default">Sort: Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="rating">Top Rated</option>
+        <option value="discount">Biggest Discount</option>
+      </select>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="grid-auto" id="product-grid">
+      <div class="text-center" style="grid-column:1/-1;padding:var(--space-3xl)">Loading products...</div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script>
+  let currentFilter = 'all';
+  let currentSort = 'default';
+
+  const catMeta = {
+    all:       { title: 'All Collections', subtitle: 'Browse our full range of trending, viral products — all available with Cash on Delivery.' },
+    tech:      { title: '💻 Tech Gadgets', subtitle: 'Smart technology and innovative gadgets to upgrade your everyday life.' },
+    kitchen:   { title: '🍳 Kitchen & Home', subtitle: 'Premium kitchen tools and home essentials that make cooking a joy.' },
+    lifestyle: { title: '✨ Lifestyle', subtitle: 'Premium lifestyle products curated for modern, stylish living.' },
+    kids:      { title: '🎈 Kids\' Products', subtitle: 'Safe, fun, and educational toys and accessories loved by kids and parents.' },
+  };
+
+  function renderProducts() {
+    const S = window.WishzyStore;
+    const filter = currentFilter === 'all' ? {} : { category: currentFilter };
+    let products = S.getProducts(filter);
+
+    // Sort
+    if (currentSort === 'price-asc') products = products.sort((a, b) => a.price - b.price);
+    else if (currentSort === 'price-desc') products = products.sort((a, b) => b.price - a.price);
+    else if (currentSort === 'rating') products = products.sort((a, b) => b.rating - a.rating);
+    else if (currentSort === 'discount') products = products.sort((a, b) => S.getDiscount(b.price, b.originalPrice) - S.getDiscount(a.price, a.originalPrice));
+
+    const grid = document.getElementById('product-grid');
+    const count = document.getElementById('product-count');
+    if (count) count.textContent = `${products.length} products found`;
+
+    if (!products.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-state__icon">📦</div><h3 class="empty-state__title">No products found</h3><p class="empty-state__text">Try a different category or check back soon!</p><a href="collections.html" class="btn btn--outline">View All</a></div>`;
+      return;
+    }
+
+    grid.innerHTML = products.map((p, i) => S.renderProductCard(p, i)).join('');
+    window.WishzyUI?.initScrollAnimations();
+    // Trigger visible for already-in-view
+    setTimeout(() => document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible')), 50);
+  }
+
+  function filterProducts(cat) {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
+    const meta = catMeta[cat] || catMeta.all;
+    document.getElementById('page-title').textContent = meta.title;
+    document.getElementById('page-subtitle').textContent = meta.subtitle;
+    document.getElementById('breadcrumb-cat').textContent = meta.title.replace(/^[^ ]+ /, '');
+    
+    // Update URL to persist category state
+    const url = new URL(window.location);
+    url.searchParams.set('cat', cat);
+    window.history.replaceState({}, '', url);
+
+    renderProducts();
+  }
+
+  function sortProducts(val) { currentSort = val; renderProducts(); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const cat = new URLSearchParams(window.location.search).get('cat') || 'all';
+    filterProducts(cat);
+  });
+</script>
+</body>
+</html>

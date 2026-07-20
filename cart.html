@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart — Wishzy</title>
+  <meta name="description" content="Review your cart and proceed to Cash on Delivery checkout on Wishzy.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb__sep">/</span><span>Cart</span></div>
+    <h1 class="display-2 fade-up">Your Cart</h1>
+    <p class="text-muted fade-up stagger-1">Review your items before placing your Cash on Delivery order.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="cart-layout" id="cart-layout">
+      <!-- Filled by JS -->
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  renderCart();
+});
+
+function renderCart() {
+  const S = window.WishzyStore;
+  const cart = S.getCart();
+  const totals = S.getCartTotals();
+  const layout = document.getElementById('cart-layout');
+
+  if (!cart.length) {
+    layout.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-state__icon">🛒</div>
+        <h3 class="empty-state__title">Your cart is empty</h3>
+        <p class="empty-state__text">Looks like you haven't added anything yet. Start shopping!</p>
+        <a href="collections.html" class="btn btn--primary btn--lg">🛍️ Start Shopping</a>
+      </div>`;
+    return;
+  }
+
+  const itemsHTML = cart.map(item => `
+    <div class="cart-item" id="cart-item-${item.productId}">
+      <a href="product.html?id=${item.productId}">
+        <img class="cart-item__img" src="${item.image}" alt="${item.title}">
+      </a>
+      <div class="cart-item__info">
+        <a href="product.html?id=${item.productId}">
+          <div class="cart-item__name">${item.title}</div>
+        </a>
+        <div class="cart-item__cat">${item.category}</div>
+        <div class="cart-item__actions">
+          <div class="qty-selector" style="gap:var(--space-sm)">
+            <button class="qty-btn" style="width:34px;height:34px;font-size:1rem" onclick="updateQty('${item.productId}', ${item.qty - 1})">−</button>
+            <span class="qty-value" style="min-width:28px;font-size:0.95rem">${item.qty}</span>
+            <button class="qty-btn" style="width:34px;height:34px;font-size:1rem" onclick="updateQty('${item.productId}', ${item.qty + 1})">+</button>
+          </div>
+          <button class="cart-item__remove" onclick="removeItem('${item.productId}')">🗑️ Remove</button>
+        </div>
+      </div>
+      <div class="cart-item__price">${S.formatPrice(item.price * item.qty)}<br><span style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:400">${S.formatPrice(item.price)} each</span></div>
+    </div>
+  `).join('');
+
+  const summaryHTML = `
+    <div class="order-summary">
+      <div class="order-summary__title">Order Summary</div>
+      ${cart.map(item => `
+        <div class="order-item">
+          <img class="order-item__img" src="${item.image}" alt="${item.title}">
+          <div class="order-item__info">
+            <div class="order-item__name">${item.title}</div>
+            <div class="order-item__qty">Qty: ${item.qty}</div>
+          </div>
+          <div class="order-item__price">${S.formatPrice(item.price * item.qty)}</div>
+        </div>
+      `).join('')}
+      <hr class="order-divider">
+      <div class="order-row"><span>Subtotal</span><span>${S.formatPrice(totals.subtotal)}</span></div>
+      <div class="order-row"><span>Shipping</span><span style="color:var(--clr-success);font-weight:600">FREE 🚚</span></div>
+      <div class="order-row"><span>Payment Method</span><span>💵 Cash on Delivery</span></div>
+      <hr class="order-divider">
+      <div class="order-row total"><span>Total</span><span class="val">${S.formatPrice(totals.total)}</span></div>
+      <a href="checkout.html" class="btn btn--primary btn--full btn--lg mt-lg">
+        💰 Proceed to Checkout
+      </a>
+      <a href="collections.html" class="btn btn--ghost btn--full mt-sm" style="font-size:0.85rem">← Continue Shopping</a>
+      <div style="margin-top:var(--space-md);display:flex;flex-wrap:wrap;gap:var(--space-sm);justify-content:center;">
+        <span style="font-size:0.75rem;color:var(--clr-text-muted)">🔒 Secure • 💵 COD • 🚚 Free Ship • 🔄 Easy Returns</span>
+      </div>
+    </div>
+  `;
+
+  layout.innerHTML = `<div>${itemsHTML}</div>${summaryHTML}`;
+}
+
+function updateQty(productId, newQty) {
+  const S = window.WishzyStore;
+  S.updateCartQty(productId, newQty);
+  renderCart();
+}
+
+function removeItem(productId) {
+  const S = window.WishzyStore;
+  S.removeFromCart(productId);
+  window.WishzyUI?.toast('Item removed from cart', 'info');
+  renderCart();
+}
+</script>
+</body>
+</html>

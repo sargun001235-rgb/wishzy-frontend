@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Wishzy</title>
+  <meta name="description" content="Place your Cash on Delivery order on Wishzy. Simple, fast, secure checkout.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .field-error { display:none; color:var(--clr-error); font-size:0.78rem; margin-top:4px; }
+    .checkout-steps { display:flex; align-items:center; gap:var(--space-sm); margin-bottom:var(--space-xl); font-size:0.82rem; }
+    .step { display:flex; align-items:center; gap:var(--space-xs); color:var(--clr-text-muted); }
+    .step.active { color:var(--clr-accent); font-weight:600; }
+    .step.done { color:var(--clr-success); }
+    .step__num { width:22px;height:22px;border-radius:50%;background:var(--clr-bg-alt);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;flex-shrink:0; }
+    .step.active .step__num { background:var(--clr-accent);color:white; }
+    .step.done .step__num { background:var(--clr-success);color:white; }
+    .step-sep { flex:1; height:1px; background:var(--clr-border); max-width:40px; }
+    .state-select option { color:black; }
+  </style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a><span class="breadcrumb__sep">/</span><a href="cart.html">Cart</a><span class="breadcrumb__sep">/</span><span>Checkout</span></div>
+    <h1 class="display-2 fade-up">Checkout</h1>
+    <p class="text-muted fade-up stagger-1">Complete your order below — pay cash on delivery. No advance payment required.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Steps -->
+    <div class="checkout-steps fade-up">
+      <div class="step done"><span class="step__num">✓</span> Cart</div>
+      <div class="step-sep"></div>
+      <div class="step active"><span class="step__num">2</span> Delivery Details</div>
+      <div class="step-sep"></div>
+      <div class="step"><span class="step__num">3</span> Confirm Order</div>
+    </div>
+
+    <div class="checkout-layout">
+      <!-- LEFT: Form -->
+      <div>
+        <!-- COD Badge -->
+        <div class="cod-badge fade-up">
+          <div class="cod-badge__icon">💵</div>
+          <div>
+            <div class="cod-badge__title">Cash on Delivery</div>
+            <div class="cod-badge__sub">Pay only when your order arrives. No card required.</div>
+          </div>
+        </div>
+
+        <form id="cod-form">
+          <!-- Personal Details -->
+          <div class="checkout-section fade-up stagger-1">
+            <div class="checkout-section__title">
+              <span class="checkout-section__icon">👤</span> Personal Information
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="f-name">Full Name *</label>
+                <input class="form-input" id="f-name" name="name" type="text" placeholder="e.g. Priya Sharma" required autocomplete="name">
+                <div class="field-error">Please enter your full name.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="f-mobile">Mobile Number *</label>
+                <input class="form-input" id="f-mobile" name="mobile" type="tel" placeholder="10-digit mobile number" required maxlength="10" autocomplete="tel">
+                <div class="field-error">Please enter a valid 10-digit mobile number.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-email">Email Address (optional)</label>
+              <input class="form-input" id="f-email" name="email" type="email" placeholder="For order updates (optional)" autocomplete="email">
+            </div>
+          </div>
+
+          <!-- Delivery Address -->
+          <div class="checkout-section fade-up stagger-2">
+            <div class="checkout-section__title">
+              <span class="checkout-section__icon">📍</span> Delivery Address
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-address">Full Address *</label>
+              <textarea class="form-input" id="f-address" name="address" rows="2" placeholder="House No., Street, Locality, Landmark" required style="resize:none"></textarea>
+              <div class="field-error">Please enter your delivery address.</div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="f-pincode">Pincode *</label>
+                <input class="form-input" id="f-pincode" name="pincode" type="text" placeholder="6-digit pincode" required maxlength="6" pattern="[0-9]{6}">
+                <div class="field-error">Please enter a valid 6-digit pincode.</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="f-city">City *</label>
+                <input class="form-input" id="f-city" name="city" type="text" placeholder="City" required autocomplete="address-level2">
+                <div class="field-error">Please enter your city.</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-state">State *</label>
+              <select class="form-select state-select" id="f-state" name="state" required>
+                <option value="">Select State</option>
+                <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option>
+                <option>Bihar</option><option>Chhattisgarh</option><option>Goa</option>
+                <option>Gujarat</option><option>Haryana</option><option>Himachal Pradesh</option>
+                <option>Jharkhand</option><option>Karnataka</option><option>Kerala</option>
+                <option>Madhya Pradesh</option><option>Maharashtra</option><option>Manipur</option>
+                <option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+                <option>Odisha</option><option>Punjab</option><option>Rajasthan</option>
+                <option>Sikkim</option><option>Tamil Nadu</option><option>Telangana</option>
+                <option>Tripura</option><option>Uttar Pradesh</option><option>Uttarakhand</option>
+                <option>West Bengal</option><option>Delhi</option>
+              </select>
+              <div class="field-error">Please select your state.</div>
+            </div>
+          </div>
+
+          <!-- Order Notes -->
+          <div class="checkout-section fade-up stagger-3">
+            <div class="checkout-section__title">
+              <span class="checkout-section__icon">📝</span> Order Notes (Optional)
+            </div>
+            <div class="form-group">
+              <textarea class="form-input" name="notes" rows="2" placeholder="Any special instructions for your order or delivery..."></textarea>
+            </div>
+          </div>
+
+          <!-- Place Order -->
+          <button type="submit" id="place-order-btn" class="btn btn--primary btn--full fade-up stagger-4" style="font-size:1.05rem;padding:18px;border-radius:var(--radius-md);letter-spacing:0.02em;box-shadow:var(--shadow-accent);">
+            💰 Confirm Cash on Delivery Order
+          </button>
+          <p class="caption text-center mt-md text-muted">🔒 Your information is safe & secure. No online payment required.</p>
+        </form>
+      </div>
+
+      <!-- RIGHT: Order Summary -->
+      <div>
+        <div class="order-summary">
+          <div class="order-summary__title">🛒 Your Order (<span id="item-count">0</span> items)</div>
+          <div id="order-items">Loading...</div>
+          <hr class="order-divider">
+          <div class="order-row"><span>Subtotal</span><span id="order-subtotal">—</span></div>
+          <div class="order-row"><span>Shipping</span><span style="color:var(--clr-success);font-weight:600" id="order-shipping">FREE 🚚</span></div>
+          <div class="order-row"><span>Payment</span><span>💵 Cash on Delivery</span></div>
+          <hr class="order-divider">
+          <div class="order-row total"><span>Total Payable</span><span class="val" id="order-total">—</span></div>
+          <div style="margin-top:var(--space-md);padding:var(--space-md);background:var(--clr-bg-alt);border-radius:var(--radius-md);font-size:0.8rem;color:var(--clr-text-muted);">
+            ✅ No payment now. Our delivery agent will collect cash when your order arrives.
+          </div>
+        </div>
+
+        <!-- Trust badges -->
+        <div style="margin-top:var(--space-md);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);">
+          <div class="card" style="padding:var(--space-md);text-align:center;"><div style="font-size:1.4rem">🚚</div><div style="font-size:0.75rem;font-weight:600;margin-top:4px">Free Shipping</div></div>
+          <div class="card" style="padding:var(--space-md);text-align:center;"><div style="font-size:1.4rem">🔄</div><div style="font-size:0.75rem;font-weight:600;margin-top:4px">Easy Returns</div></div>
+          <div class="card" style="padding:var(--space-md);text-align:center;"><div style="font-size:1.4rem">📦</div><div style="font-size:0.75rem;font-weight:600;margin-top:4px">3–7 Day Delivery</div></div>
+          <div class="card" style="padding:var(--space-md);text-align:center;"><div style="font-size:1.4rem">⭐</div><div style="font-size:0.75rem;font-weight:600;margin-top:4px">50K+ Reviews</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>

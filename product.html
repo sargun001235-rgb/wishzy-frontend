@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="page-title">Product — Wishzy</title>
+  <meta name="description" id="page-desc" content="Shop trending products at Wishzy with Cash on Delivery.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛍️</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .review-item { padding:var(--space-lg) 0; border-bottom:1px solid var(--clr-border); }
+    .review-item:last-child { border-bottom:none; }
+    .review-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:var(--space-sm); }
+    .review-author { font-weight:600; font-size:0.9rem; }
+    .review-date { font-size:0.78rem; color:var(--clr-text-muted); }
+    .review-stars { color:#F59E0B; font-size:0.85rem; margin-bottom:var(--space-sm); }
+    .review-text { font-size:0.9rem; color:var(--clr-text-muted); line-height:1.6; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .product-tab { padding:10px 20px; border:none; background:none; font-size:0.9rem; font-weight:600; color:var(--clr-text-muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; transition:all var(--transition-fast); }
+    .product-tab.active { color:var(--clr-accent); border-bottom-color:var(--clr-accent); }
+    .related-section { background:var(--clr-bg-alt); padding:var(--space-2xl) 0; }
+  </style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="container" id="product-body" style="padding-block:var(--space-lg)">
+  <!-- Filled by JS -->
+  <div class="text-center" style="padding:var(--space-3xl)">Loading product...</div>
+</div>
+
+<!-- Related Products -->
+<div class="related-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-header__eyebrow">You May Also Like</div>
+      <h2 class="display-3 section-header__title">Related Products</h2>
+    </div>
+    <div class="grid-auto" id="related-grid"></div>
+  </div>
+</div>
+
+<!-- Sticky COD CTA (mobile) -->
+<div class="sticky-cta" id="sticky-cta" style="display:none;">
+  <div style="flex:1;">
+    <div id="sticky-price" style="font-weight:800;font-size:1.1rem;"></div>
+    <div style="font-size:0.72rem;color:var(--clr-text-muted)">Free Shipping • COD Available</div>
+  </div>
+  <button class="btn btn--primary" id="sticky-buy-btn" style="flex:1;border-radius:var(--radius-md);">
+    💰 Buy Now (COD)
+  </button>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const S = window.WishzyStore;
+  const id = new URLSearchParams(window.location.search).get('id');
+  const body = document.getElementById('product-body');
+
+  if (!id) { body.innerHTML = `<div class="empty-state"><div class="empty-state__icon">😕</div><h3 class="empty-state__title">Product not found</h3><a href="collections.html" class="btn btn--primary mt-lg">Browse Products</a></div>`; return; }
+
+  const product = S.getProductById(id);
+  if (!product) { body.innerHTML = `<div class="empty-state"><div class="empty-state__icon">😕</div><h3 class="empty-state__title">Product not found</h3><a href="collections.html" class="btn btn--primary mt-lg">Browse Products</a></div>`; return; }
+
+  // SEO
+  document.getElementById('page-title').textContent = `${product.title} — Wishzy`;
+  document.getElementById('page-desc').content = product.description;
+
+  let qty = 1;
+  let selectedImg = 0;
+
+  const discount = S.getDiscount(product.price, product.originalPrice);
+  const wishlisted = S.isWishlisted(id);
+
+  // Mock reviews
+  const reviews = [
+    { name:'Deepika M.', loc:'Mumbai', rating:5, date:'3 days ago', text:'Absolutely love this product! Works exactly as described. Fast delivery and super well-packaged.' },
+    { name:'Sanjay R.', loc:'Delhi', rating:5, date:'1 week ago', text:'Great quality for the price. My whole family is using it. Will definitely order more from Wishzy.' },
+    { name:'Kavitha P.', loc:'Chennai', rating:4, date:'2 weeks ago', text:'Good product overall. Delivery was a bit delayed by 1 day but the quality made up for it.' },
+  ];
+
+  body.innerHTML = `
+    <div class="breadcrumb mb-lg">
+      <a href="index.html">Home</a>
+      <span class="breadcrumb__sep">/</span>
+      <a href="collections.html?cat=${product.categorySlug}">${product.category}</a>
+      <span class="breadcrumb__sep">/</span>
+      <span>${product.title}</span>
+    </div>
+
+    <div class="product-layout">
+      <!-- Gallery -->
+      <div class="product-gallery fade-in visible">
+        <div class="product-gallery__main">
+          <img id="main-img" src="${product.images[0]}" alt="${product.title}">
+        </div>
+        <div class="product-gallery__thumbs">
+          ${product.images.map((img, i) => `
+            <div class="thumb ${i === 0 ? 'active' : ''}" onclick="selectImg(${i}, this)">
+              <img src="${img}" alt="">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="product-info fade-up visible">
+        <div class="product-info__category">${product.category}</div>
+        <h1 class="product-info__title">${product.title}</h1>
+
+        <div class="product-info__rating">
+          <span class="stars">${S.getStars(product.rating)}</span>
+          <span class="fw-600">${product.rating}</span>
+          <span class="text-muted">(${product.reviews.toLocaleString('en-IN')} reviews)</span>
+          <span class="pill pill--success">✅ In Stock</span>
+        </div>
+
+        <div class="product-info__price-block">
+          <span class="product-info__price">${S.formatPrice(product.price)}</span>
+          <span class="product-info__price-original">${S.formatPrice(product.originalPrice)}</span>
+          <div class="product-info__saving">🎉 You save ${S.formatPrice(product.originalPrice - product.price)} (${discount}% off)</div>
+        </div>
+
+        <!-- Quantity -->
+        <div style="margin-bottom:var(--space-md)">
+          <div class="form-label">Quantity</div>
+          <div class="qty-selector">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <span class="qty-value" id="qty-display">1</span>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <!-- CTAs -->
+        <div class="product-ctas">
+          <button class="btn btn--primary btn--lg btn--full" onclick="addToCart()">
+            🛒 Add to Cart
+          </button>
+          <a href="checkout.html" class="btn btn--ghost btn--lg btn--full" onclick="buyNow()">
+            💰 Buy Now — Cash on Delivery
+          </a>
+        </div>
+
+        <!-- Features -->
+        <div class="product-features">
+          ${product.features.map(f => `
+            <div class="feature-item">
+              <span class="feature-item__icon">✅</span>
+              <span>${f}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Trust -->
+        <div style="display:flex;gap:var(--space-md);flex-wrap:wrap;padding:var(--space-md);background:var(--clr-bg-alt);border-radius:var(--radius-md);">
+          <div class="trust-item"><span>🚚</span> Free Shipping</div>
+          <div class="trust-item"><span>💵</span> Cash on Delivery</div>
+          <div class="trust-item"><span>🔄</span> 7-Day Returns</div>
+          <div class="trust-item"><span>🔒</span> Secure Checkout</div>
+        </div>
+
+        <!-- Wishlist -->
+        <button class="btn btn--outline btn--full mt-md" id="wishlist-btn" onclick="toggleWish()" style="gap:var(--space-sm)">
+          ${wishlisted ? '❤️ Wishlisted' : '🤍 Add to Wishlist'}
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs: Description / Reviews -->
+    <div style="margin-top:var(--space-2xl);">
+      <div style="border-bottom:1px solid var(--clr-border);display:flex;gap:0;margin-bottom:var(--space-xl);">
+        <button class="product-tab active" onclick="openTab('desc', this)">Description</button>
+        <button class="product-tab" onclick="openTab('reviews', this)">Reviews (${reviews.length})</button>
+        <button class="product-tab" onclick="openTab('shipping', this)">Shipping & Returns</button>
+      </div>
+
+      <div id="tab-desc" class="tab-content active">
+        <p style="color:var(--clr-text-muted);line-height:1.8;font-size:1rem;max-width:680px">${product.description}</p>
+        <div class="product-features mt-lg" style="max-width:480px">
+          ${product.features.map(f => `<div class="feature-item"><span class="feature-item__icon">✅</span><span>${f}</span></div>`).join('')}
+        </div>
+      </div>
+
+      <div id="tab-reviews" class="tab-content">
+        ${reviews.map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <div><div class="review-author">${r.name} · 📍${r.loc}</div><div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div></div>
+              <div class="review-date">${r.date}</div>
+            </div>
+            <p class="review-text">${r.text}</p>
+          </div>
+        `).join('')}
+      </div>
+
+      <div id="tab-shipping" class="tab-content">
+        <div style="display:grid;gap:var(--space-md);max-width:600px">
+          <div class="card" style="padding:var(--space-lg)"><div style="font-size:1.5rem;margin-bottom:var(--space-sm)">🚚</div><h3 class="h3 mb-sm">Free Shipping</h3><p class="text-muted body-sm">We offer free shipping on all orders across India. Estimated delivery: 3–7 business days.</p></div>
+          <div class="card" style="padding:var(--space-lg)"><div style="font-size:1.5rem;margin-bottom:var(--space-sm)">💵</div><h3 class="h3 mb-sm">Cash on Delivery</h3><p class="text-muted body-sm">Pay only when your order arrives. No advance payment needed. Our delivery partner will collect payment.</p></div>
+          <div class="card" style="padding:var(--space-lg)"><div style="font-size:1.5rem;margin-bottom:var(--space-sm)">🔄</div><h3 class="h3 mb-sm">7-Day Returns</h3><p class="text-muted body-sm">Not satisfied? Contact us within 7 days of delivery. We'll arrange a free pickup and full refund.</p></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Sticky CTA
+  const stickyCTA = document.getElementById('sticky-cta');
+  const stickyPrice = document.getElementById('sticky-price');
+  if (stickyCTA && stickyPrice) {
+    stickyPrice.textContent = S.formatPrice(product.price);
+    stickyCTA.style.display = '';
+    document.getElementById('sticky-buy-btn').addEventListener('click', () => {
+      S.addToCart(id, qty);
+      window.location.href = 'checkout.html';
+    });
+  }
+
+  // Related
+  const relatedGrid = document.getElementById('related-grid');
+  if (relatedGrid) {
+    const related = S.getProducts({ category: product.categorySlug }).filter(p => p.id !== id).slice(0, 4);
+    relatedGrid.innerHTML = related.map((p, i) => S.renderProductCard(p, i)).join('');
+  }
+
+  // Functions
+  window.selectImg = (i, el) => {
+    selectedImg = i;
+    document.getElementById('main-img').src = product.images[i];
+    document.querySelectorAll('.thumb').forEach((t, ti) => t.classList.toggle('active', ti === i));
+  };
+
+  window.changeQty = (delta) => {
+    qty = Math.max(1, Math.min(10, qty + delta));
+    document.getElementById('qty-display').textContent = qty;
+  };
+
+  window.addToCart = () => {
+    S.addToCart(id, qty);
+    window.WishzyUI?.toast('Added to cart! 🛒', 'success');
+  };
+
+  window.buyNow = () => {
+    S.addToCart(id, qty);
+  };
+
+  window.toggleWish = () => {
+    const added = S.toggleWishlist(id);
+    const btn = document.getElementById('wishlist-btn');
+    btn.innerHTML = added ? '❤️ Wishlisted' : '🤍 Add to Wishlist';
+    window.WishzyUI?.toast(added ? 'Added to Wishlist ❤️' : 'Removed from Wishlist', 'info');
+  };
+
+  window.openTab = (tabId, trigger) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.product-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    trigger.classList.add('active');
+  };
+});
+</script>
+</body>
+</html>

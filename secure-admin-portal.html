@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Wishzy</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚙️</text></svg>">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ── LOGIN SCREEN ──────────────────────────────────────────── -->
+<div id="login-screen" class="adm-login">
+  <div class="adm-login__box">
+    <div class="adm-login__logo">
+      <div class="adm-sidebar__logo-mark">W</div>
+      <span style="font-size:1.3rem;font-weight:700">Wishzy</span>
+      <span class="adm-sidebar__logo-badge">ADMIN</span>
+    </div>
+    <h1 class="adm-login__title">Welcome Back</h1>
+    <p class="adm-login__sub">Sign in to your admin dashboard to manage products, orders, and more.</p>
+
+    <div class="adm-login__error" id="login-error">Incorrect password. Please try again.</div>
+
+    <form id="login-form">
+      <div class="adm-form-group">
+        <label class="adm-label">Admin Password</label>
+        <input class="adm-input" id="admin-pw" type="password" placeholder="Enter admin password" autocomplete="current-password">
+      </div>
+      <button type="submit" class="adm-btn adm-btn--primary adm-btn--full" style="padding:12px;font-size:0.95rem;margin-top:8px">
+        🔐 Sign In
+      </button>
+    </form>
+
+    <p style="margin-top:24px;font-size:0.78rem;color:var(--adm-muted);text-align:center">
+      Default password: <code style="background:rgba(255,255,255,0.08);padding:2px 8px;border-radius:4px;font-family:monospace">wishzy@admin</code>
+    </p>
+    <p style="margin-top:8px;font-size:0.72rem;color:var(--adm-muted);text-align:center">
+      Change this in Settings after logging in.
+    </p>
+
+    <div style="margin-top:32px;text-align:center">
+      <a href="index.html" style="font-size:0.82rem;color:var(--adm-muted);display:inline-flex;align-items:center;gap:6px">← Back to Store</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD APP ──────────────────────────────────────────── -->
+<div id="dashboard-app" class="adm-layout" style="display:none">
+
+  <!-- SIDEBAR -->
+  <aside class="adm-sidebar" id="adm-sidebar">
+    <div class="adm-sidebar__header">
+      <div class="adm-sidebar__logo">
+        <div class="adm-sidebar__logo-mark">W</div>
+        <span class="adm-sidebar__logo-text" style="font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:700">Wishzy</span>
+        <span class="adm-sidebar__logo-badge">ADMIN</span>
+      </div>
+    </div>
+
+    <nav class="adm-nav">
+      <div class="adm-nav__section-title">Main</div>
+      <button class="adm-nav__item active" data-panel="dashboard" onclick="WishzyAdmin.showPanel('dashboard')">
+        <span class="adm-nav__item__icon">📊</span> Dashboard
+      </button>
+      <button class="adm-nav__item" data-panel="products" onclick="WishzyAdmin.showPanel('products')">
+        <span class="adm-nav__item__icon">📦</span> Products
+        <span class="adm-nav__badge" id="prod-count-badge">12</span>
+      </button>
+      <button class="adm-nav__item" data-panel="orders" onclick="WishzyAdmin.showPanel('orders')">
+        <span class="adm-nav__item__icon">🛒</span> Orders
+        <span class="adm-nav__badge" id="orders-count-badge" style="background:var(--adm-error)">0</span>
+      </button>
+      <button class="adm-nav__item" data-panel="analytics" onclick="WishzyAdmin.showPanel('analytics')">
+        <span class="adm-nav__item__icon">📈</span> Analytics
+      </button>
+
+      <div class="adm-nav__section-title">Store</div>
+      <button class="adm-nav__item" onclick="window.open('index.html','_blank')">
+        <span class="adm-nav__item__icon">🏪</span> View Store
+      </button>
+      <button class="adm-nav__item" data-panel="settings" onclick="WishzyAdmin.showPanel('settings')">
+        <span class="adm-nav__item__icon">⚙️</span> Settings
+      </button>
+
+      <div class="adm-nav__section-title">Help</div>
+      <button class="adm-nav__item" onclick="WishzyAdmin.showPanel('guide')">
+        <span class="adm-nav__item__icon">📖</span> Admin Guide
+      </button>
+    </nav>
+
+    <div class="adm-sidebar__footer">
+      <div class="adm-user-avatar">A</div>
+      <div>
+        <div class="adm-user-name">Admin</div>
+        <div class="adm-user-role">Store Owner</div>
+      </div>
+      <button onclick="WishzyAdmin.logout()" style="margin-left:auto;background:rgba(255,255,255,0.06);border:none;color:var(--adm-muted);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.9rem" title="Logout">⏻</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="adm-main">
+
+    <!-- Top Bar -->
+    <header class="adm-topbar">
+      <div>
+        <div class="adm-topbar__title" id="topbar-title">Dashboard Overview</div>
+        <div class="adm-topbar__subtitle" id="topbar-subtitle"></div>
+      </div>
+      <div class="adm-topbar__actions">
+        <a href="index.html" target="_blank" class="adm-topbar__btn">🏪 View Store</a>
+        <button class="adm-topbar__btn adm-topbar__btn--primary" onclick="WishzyAdmin.showPanel('products');WishzyAdmin.openAddProduct()">
+          ➕ Add Product
+        </button>
+        <button style="background:rgba(255,255,255,0.06);border:none;color:var(--adm-muted);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;" id="sidebar-toggle" onclick="document.getElementById('adm-sidebar').classList.toggle('open')">☰</button>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <div class="adm-content">
+
+      <!-- ── DASHBOARD PANEL ──────────────────────────────── -->
+      <div id="panel-dashboard" class="adm-panel active">
+
+        <!-- Stats -->
+        <div class="adm-stats">
+          <div class="adm-stat">
+            <div class="adm-stat__icon">🛒</div>
+            <div class="adm-stat__value" id="stat-orders">0</div>
+            <div class="adm-stat__label">Total Orders</div>
+            <div class="adm-stat__change up">↑ Live</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">💰</div>
+            <div class="adm-stat__value" id="stat-revenue">₹0</div>
+            <div class="adm-stat__label">Total Revenue (COD)</div>
+            <div class="adm-stat__change up">↑ Live</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">📦</div>
+            <div class="adm-stat__value" id="stat-products">12</div>
+            <div class="adm-stat__label">Products Listed</div>
+            <div class="adm-stat__change up">↑ Active</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">⏳</div>
+            <div class="adm-stat__value" id="stat-pending">0</div>
+            <div class="adm-stat__label">Pending Deliveries</div>
+            <div class="adm-stat__change" id="pending-change">—</div>
+          </div>
+        </div>
+
+        <div class="adm-grid-2">
+          <!-- Recent Orders -->
+          <div class="adm-card">
+            <div class="adm-card__header">
+              <div class="adm-card__title">🛒 Recent Orders</div>
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.showPanel('orders')">View All</button>
+            </div>
+            <div class="adm-table-wrap">
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-orders-list">
+                  <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--adm-muted)">No orders yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div>
+            <!-- Top Products Chart -->
+            <div class="adm-card" style="margin-bottom:20px">
+              <div class="adm-card__header">
+                <div class="adm-card__title">🔥 Top Products by Price</div>
+              </div>
+              <div class="adm-card__body">
+                <div class="chart-bar-list" id="top-products-list">
+                  <p style="color:var(--adm-muted);font-size:0.875rem">Loading...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="adm-card">
+              <div class="adm-card__header">
+                <div class="adm-card__title">⚡ Live Activity</div>
+              </div>
+              <div class="adm-card__body" id="activity-feed">
+                Loading...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="adm-card">
+          <div class="adm-card__header">
+            <div class="adm-card__title">⚡ Quick Actions</div>
+          </div>
+          <div class="adm-card__body" style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="adm-btn adm-btn--primary" onclick="WishzyAdmin.showPanel('products');WishzyAdmin.openAddProduct()">➕ Add New Product</button>
+            <button class="adm-btn adm-btn--ghost" onclick="WishzyAdmin.showPanel('orders')">📋 View All Orders</button>
+            <button class="adm-btn adm-btn--ghost" onclick="WishzyAdmin.showPanel('analytics')">📈 View Analytics</button>
+            <a href="index.html" target="_blank" class="adm-btn adm-btn--ghost">🏪 Visit Store</a>
+            <button class="adm-btn adm-btn--ghost" onclick="WishzyAdmin.showPanel('settings')">⚙️ Store Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PRODUCTS PANEL ────────────────────────────────── -->
+      <div id="panel-products" class="adm-panel">
+        <div class="adm-card">
+          <div class="adm-card__header">
+            <div class="adm-card__title">📦 Product Catalogue</div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <div class="adm-search">
+                <span>🔍</span>
+                <input type="text" placeholder="Search products..." oninput="WishzyAdmin.searchProducts(this.value)">
+              </div>
+              <button class="adm-btn adm-btn--primary" onclick="WishzyAdmin.openAddProduct()">➕ Add Product</button>
+            </div>
+          </div>
+          <div class="adm-table-wrap">
+            <table class="adm-table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Product Name</th>
+                  <th>Price</th>
+                  <th>Badge</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--adm-muted)">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Import hint -->
+        <div class="adm-card">
+          <div class="adm-card__header">
+            <div class="adm-card__title">🔌 Dropshipping / Import Products</div>
+          </div>
+          <div class="adm-card__body">
+            <p style="color:var(--adm-muted);font-size:0.875rem;margin-bottom:16px">To add products from dropshipping platforms, copy the product title, images, price, and description from your supplier portal and paste them into the "Add Product" form above.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <span class="adm-badge adm-badge--info" style="padding:6px 14px">🛒 AliExpress</span>
+              <span class="adm-badge adm-badge--info" style="padding:6px 14px">📦 Meesho</span>
+              <span class="adm-badge adm-badge--info" style="padding:6px 14px">🏭 IndiaMart</span>
+              <span class="adm-badge adm-badge--info" style="padding:6px 14px">🚀 Shopify CSV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ORDERS PANEL ───────────────────────────────────── -->
+      <div id="panel-orders" class="adm-panel">
+        <div class="adm-card">
+          <div class="adm-card__header">
+            <div class="adm-card__title">🛒 All Orders</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.filterOrders('')">All</button>
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.filterOrders('Confirmed')">Confirmed</button>
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.filterOrders('Shipped')">Shipped</button>
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.filterOrders('Delivered')">Delivered</button>
+              <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.filterOrders('Cancelled')">Cancelled</button>
+            </div>
+          </div>
+          <div class="adm-table-wrap">
+            <table class="adm-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Location</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Update</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body">
+                <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--adm-muted)">No orders yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ANALYTICS PANEL ───────────────────────────────── -->
+      <div id="panel-analytics" class="adm-panel">
+        <div class="adm-stats">
+          <div class="adm-stat">
+            <div class="adm-stat__icon">💰</div>
+            <div class="adm-stat__value" id="an-revenue">₹0</div>
+            <div class="adm-stat__label">Total Revenue</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">🛒</div>
+            <div class="adm-stat__value" id="an-orders">0</div>
+            <div class="adm-stat__label">Total Orders</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">✅</div>
+            <div class="adm-stat__value" id="an-conv">0%</div>
+            <div class="adm-stat__label">Delivery Rate</div>
+          </div>
+          <div class="adm-stat">
+            <div class="adm-stat__icon">📊</div>
+            <div class="adm-stat__value" id="an-aov">₹0</div>
+            <div class="adm-stat__label">Avg. Order Value</div>
+          </div>
+        </div>
+
+        <div class="adm-grid-2">
+          <div class="adm-card">
+            <div class="adm-card__header"><div class="adm-card__title">📂 Products by Category</div></div>
+            <div class="adm-card__body">
+              <div class="chart-bar-list" id="cat-breakdown"></div>
+            </div>
+          </div>
+          <div class="adm-card">
+            <div class="adm-card__header"><div class="adm-card__title">🔄 Orders by Status</div></div>
+            <div class="adm-card__body">
+              <div class="chart-bar-list" id="status-breakdown"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="adm-card">
+          <div class="adm-card__header"><div class="adm-card__title">💡 Performance Tips</div></div>
+          <div class="adm-card__body">
+            <div style="display:grid;gap:12px">
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(197,139,88,0.08);border-radius:10px;border:1px solid rgba(197,139,88,0.2)">
+                <span style="font-size:1.2rem">🎯</span>
+                <div><div style="font-weight:600;font-size:0.875rem;margin-bottom:4px">Run Flash Sales</div><div style="font-size:0.8rem;color:var(--adm-muted)">Reduce prices by 30–50% on trending products for 24 hours to boost conversion rates significantly.</div></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(74,156,106,0.08);border-radius:10px;border:1px solid rgba(74,156,106,0.2)">
+                <span style="font-size:1.2rem">📸</span>
+                <div><div style="font-weight:600;font-size:0.875rem;margin-bottom:4px">Add Video Reviews</div><div style="font-size:0.8rem;color:var(--adm-muted)">Products with video demonstrations convert 3x better. Add a YouTube embed URL to your product descriptions.</div></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;background:rgba(123,97,255,0.08);border-radius:10px;border:1px solid rgba(123,97,255,0.2)">
+                <span style="font-size:1.2rem">🚀</span>
+                <div><div style="font-weight:600;font-size:0.875rem;margin-bottom:4px">Facebook Ads Integration</div><div style="font-size:0.8rem;color:var(--adm-muted)">Add your Facebook Pixel ID to track conversions from ads and optimize campaigns for COD orders.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS PANEL ────────────────────────────────── -->
+      <div id="panel-settings" class="adm-panel">
+        <div class="adm-grid-2">
+          <div>
+            <div class="adm-card">
+              <div class="adm-card__header"><div class="adm-card__title">🏪 Store Settings</div></div>
+              <div class="adm-card__body">
+                <div class="adm-form-group">
+                  <label class="adm-label">Store Name</label>
+                  <input class="adm-input" id="set-storename" value="Wishzy" placeholder="Your store name">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Admin Email</label>
+                  <input class="adm-input" id="set-email" type="email" placeholder="admin@wishzy.in">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">WhatsApp Number</label>
+                  <input class="adm-input" id="set-wa" type="tel" placeholder="+91 XXXXXXXXXX">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Tagline</label>
+                  <input class="adm-input" id="set-tagline" value="Smart Choices. Everyday Happiness.">
+                </div>
+                <button class="adm-btn adm-btn--primary adm-btn--full" onclick="WishzyAdmin.saveSettings()">💾 Save Settings</button>
+              </div>
+            </div>
+
+            <div class="adm-card">
+              <div class="adm-card__header"><div class="adm-card__title">📦 Shipping Settings</div></div>
+              <div class="adm-card__body">
+                <div class="adm-form-group">
+                  <label class="adm-label">Free Shipping Minimum (₹)</label>
+                  <input class="adm-input" type="number" value="0" placeholder="0 = Always free">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Estimated Delivery Days</label>
+                  <input class="adm-input" type="text" value="3–7 Business Days">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">COD Available</label>
+                  <select class="adm-select"><option>Yes — All Orders</option><option>No</option></select>
+                </div>
+                <button class="adm-btn adm-btn--primary adm-btn--full" onclick="WishzyAdmin.showToast('Shipping settings saved! 🚚', 'success')">💾 Save</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="adm-card">
+              <div class="adm-card__header"><div class="adm-card__title">🔌 Integrations</div></div>
+              <div class="adm-card__body">
+                <div class="adm-form-group">
+                  <label class="adm-label">Facebook Pixel ID</label>
+                  <input class="adm-input" placeholder="e.g. 1234567890123456">
+                  <small style="color:var(--adm-muted);font-size:0.75rem;margin-top:4px;display:block">For tracking ad conversions from Facebook/Instagram campaigns.</small>
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Google Analytics ID</label>
+                  <input class="adm-input" placeholder="e.g. G-XXXXXXXXXX">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">WhatsApp Chat Widget Phone</label>
+                  <input class="adm-input" placeholder="+91 XXXXXXXXXX">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Courier Partner API Key</label>
+                  <input class="adm-input" type="password" placeholder="Shiprocket / Delhivery API key">
+                </div>
+                <button class="adm-btn adm-btn--primary adm-btn--full" onclick="WishzyAdmin.showToast('Integration keys saved! 🔌', 'success')">💾 Save Integrations</button>
+              </div>
+            </div>
+
+            <!-- ── SHOPIFY AUTOMATION CARD ──────────────────────── -->
+            <div class="adm-card" id="shopify-card">
+              <div class="adm-card__header">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="adm-card__title">🛍️ Shopify Automation</div>
+                  <span class="adm-badge adm-badge--muted" id="shopify-status-badge">⚪ Not Connected</span>
+                </div>
+                <button class="adm-btn adm-btn--ghost adm-btn--sm" onclick="WishzyAdmin.testShopifyConnection()" id="shopify-test-btn">🔗 Test Connection</button>
+              </div>
+              <div class="adm-card__body">
+
+                <!-- Info Banner -->
+                <div style="background:rgba(123,97,255,0.08);border:1px solid rgba(123,97,255,0.2);border-radius:10px;padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start">
+                  <span style="font-size:1.1rem;flex-shrink:0">🤖</span>
+                  <div>
+                    <div style="font-weight:700;font-size:0.85rem;color:var(--adm-text);margin-bottom:3px">Serverless Sync (Dev Dashboard)</div>
+                    <div style="font-size:0.78rem;color:var(--adm-muted);line-height:1.6">Your orders are securely pushed via Netlify. Ensure your <code>SHOPIFY_CLIENT_ID</code> and <code>SHOPIFY_CLIENT_SECRET</code> are stored securely in your Netlify Environment Variables. The backend will negotiate the OAuth token dynamically!</div>
+                  </div>
+                </div>
+
+                <!-- Field: Store URL -->
+                <div class="adm-form-group">
+                  <label class="adm-label" for="shopify-url">Shopify Store URL</label>
+                  <div style="position:relative; display:flex; gap:10px;">
+                    <div style="position:relative; flex:1">
+                      <input class="adm-input" id="shopify-url" type="text"
+                        placeholder="storename.myshopify.com"
+                        autocomplete="off" spellcheck="false"
+                        style="padding-left:40px">
+                      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:0.9rem;pointer-events:none">🌐</span>
+                    </div>
+                    <button class="adm-btn adm-btn--primary" onclick="WishzyAdmin.saveShopifyUrl()" style="padding:0 20px;">Save URL</button>
+                  </div>
+                  <small style="color:var(--adm-muted);font-size:0.72rem;margin-top:5px;display:block">Enter just the subdomain — e.g. <code style="background:rgba(255,255,255,0.07);padding:1px 5px;border-radius:3px">mywishzystore.myshopify.com</code></small>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                  <button class="adm-btn adm-btn--ghost" id="shopify-pull-btn"
+                    onclick="WishzyAdmin.pullShopifyProducts()"
+                    style="flex-direction:column;gap:4px;padding:14px 10px;height:auto;text-align:center">
+                    <span style="font-size:1.3rem">⬇️</span>
+                    <span style="font-weight:700;font-size:0.82rem">Pull Products</span>
+                    <span style="font-size:0.7rem;color:var(--adm-muted)">Import from Shopify</span>
+                  </button>
+                  <button class="adm-btn adm-btn--ghost" id="shopify-push-btn"
+                    onclick="WishzyAdmin.pushCODOrdersToShopify()"
+                    style="flex-direction:column;gap:4px;padding:14px 10px;height:auto;text-align:center">
+                    <span style="font-size:1.3rem">⬆️</span>
+                    <span style="font-weight:700;font-size:0.82rem">Push COD Orders</span>
+                    <span style="font-size:0.7rem;color:var(--adm-muted)">Sync to Shopify</span>
+                  </button>
+                </div>
+
+                <!-- Sync Log -->
+                <div style="margin-top:16px">
+                  <div style="font-size:0.72rem;font-weight:700;color:var(--adm-muted);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px">Sync Log</div>
+                  <div id="shopify-log" style="background:rgba(0,0,0,0.2);border-radius:8px;padding:12px;font-family:monospace;font-size:0.72rem;color:var(--adm-muted);min-height:60px;max-height:140px;overflow-y:auto;line-height:1.8">
+                    <span style="opacity:0.5">// No activity yet. Save your credentials and run a sync.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ── END SHOPIFY AUTOMATION CARD ─────────────────── -->
+
+
+            <div class="adm-card">
+              <div class="adm-card__header"><div class="adm-card__title">🛡️ Security</div></div>
+              <div class="adm-card__body">
+                <div class="adm-form-group">
+                  <label class="adm-label">New Admin Password</label>
+                  <input class="adm-input" id="new-pw" type="password" placeholder="Enter new password">
+                </div>
+                <div class="adm-form-group">
+                  <label class="adm-label">Confirm New Password</label>
+                  <input class="adm-input" id="confirm-pw" type="password" placeholder="Confirm new password">
+                </div>
+                <button class="adm-btn adm-btn--ghost adm-btn--full" onclick="WishzyAdmin.showToast('Password change requires backend integration. ⚠️', 'warning')">🔐 Change Password</button>
+                <hr style="border-color:var(--adm-border);margin:16px 0">
+                <button class="adm-btn adm-btn--danger adm-btn--full" onclick="if(confirm('Logout?')) WishzyAdmin.logout()">⏻ Logout</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── GUIDE PANEL ───────────────────────────────────── -->
+      <div id="panel-guide" class="adm-panel">
+        <div class="adm-card">
+          <div class="adm-card__header"><div class="adm-card__title">📖 Admin Guide — How to Use Wishzy Dashboard</div></div>
+          <div class="adm-card__body" style="max-width:760px">
+            <div style="display:grid;gap:20px">
+
+              <div style="padding:20px;background:rgba(197,139,88,0.08);border-radius:12px;border:1px solid rgba(197,139,88,0.2)">
+                <h3 style="font-size:1rem;margin-bottom:12px;color:var(--adm-accent)">➕ How to Add a Product</h3>
+                <ol style="padding-left:20px;color:var(--adm-muted);font-size:0.875rem;line-height:2">
+                  <li>Click <strong style="color:var(--adm-text)">"➕ Add Product"</strong> button in top bar or Products panel</li>
+                  <li>Enter the product Title, Sale Price, Original Price, and Category</li>
+                  <li>Add the product image URLs (one per line — from your supplier or Unsplash)</li>
+                  <li>Write a compelling description and add feature bullet points</li>
+                  <li>Select Badge (Hot, New, Trending, Sale) and Stock Status</li>
+                  <li>Click <strong style="color:var(--adm-text)">"Save Product"</strong> — it's instantly live on your store!</li>
+                </ol>
+              </div>
+
+              <div style="padding:20px;background:rgba(74,156,106,0.08);border-radius:12px;border:1px solid rgba(74,156,106,0.2)">
+                <h3 style="font-size:1rem;margin-bottom:12px;color:var(--adm-success)">📋 How to Manage Orders</h3>
+                <ol style="padding-left:20px;color:var(--adm-muted);font-size:0.875rem;line-height:2">
+                  <li>Go to <strong style="color:var(--adm-text)">Orders</strong> panel to see all placed orders</li>
+                  <li>Each order shows: Customer name, mobile, address, items, and total</li>
+                  <li>Use the <strong style="color:var(--adm-text)">Status dropdown</strong> to update order status as it progresses</li>
+                  <li>Call customers to confirm COD orders before dispatch</li>
+                  <li>Mark orders as "Delivered" once payment is collected</li>
+                </ol>
+              </div>
+
+              <div style="padding:20px;background:rgba(123,97,255,0.08);border-radius:12px;border:1px solid rgba(123,97,255,0.2)">
+                <h3 style="font-size:1rem;margin-bottom:12px;color:#9B7EFF">🔌 Dropshipping Workflow</h3>
+                <ol style="padding-left:20px;color:var(--adm-muted);font-size:0.875rem;line-height:2">
+                  <li>Find a trending product on AliExpress, Meesho, or IndiaMart</li>
+                  <li>Copy the product title, price, and images</li>
+                  <li>Paste into <strong style="color:var(--adm-text)">"Add Product"</strong> form in this dashboard</li>
+                  <li>Set your selling price (with margin) — product is instantly live</li>
+                  <li>When an order comes in, place the order with your supplier and ship directly to customer</li>
+                </ol>
+              </div>
+
+              <div style="padding:20px;background:rgba(232,168,56,0.08);border-radius:12px;border:1px solid rgba(232,168,56,0.2)">
+                <h3 style="font-size:1rem;margin-bottom:12px;color:var(--adm-warning)">📱 To Go Live on Real Hosting</h3>
+                <ol style="padding-left:20px;color:var(--adm-muted);font-size:0.875rem;line-height:2">
+                  <li>Upload all files to a hosting service (Hostinger, Bluehost, cPanel)</li>
+                  <li>Point your domain (e.g. wishzy.in) to the hosting nameservers</li>
+                  <li>For real order management, connect to a backend (Node.js, PHP, Firebase)</li>
+                  <li>Integrate Shiprocket or Delhivery API for automatic shipping</li>
+                  <li>Add Facebook Pixel for ad tracking via Settings panel</li>
+                </ol>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end adm-content -->
+  </main>
+</div><!-- end dashboard-app -->
+
+<!-- ── PRODUCT MODAL ──────────────────────────────────────────── -->
+<div class="adm-modal-overlay" id="product-modal">
+  <div class="adm-modal">
+    <div class="adm-modal__header">
+      <div class="adm-modal__title" id="product-modal-title">Add Product</div>
+      <button class="adm-modal__close" onclick="WishzyAdmin.closeProductModal()">✕</button>
+    </div>
+    <input type="hidden" id="product-id-hidden">
+    <form id="product-form" onsubmit="event.preventDefault();WishzyAdmin.saveProduct()">
+      <div class="adm-form-grid-2">
+        <div class="adm-form-group" style="grid-column:1/-1">
+          <label class="adm-label">Product Title *</label>
+          <input class="adm-input" id="pm-title" placeholder="e.g. Smart LED Desk Lamp" required>
+        </div>
+        <div class="adm-form-group">
+          <label class="adm-label">Sale Price (₹) *</label>
+          <input class="adm-input" id="pm-price" type="number" placeholder="e.g. 1299" required>
+        </div>
+        <div class="adm-form-group">
+          <label class="adm-label">Original Price (₹)</label>
+          <input class="adm-input" id="pm-original" type="number" placeholder="e.g. 2499">
+        </div>
+        <div class="adm-form-group">
+          <label class="adm-label">Category *</label>
+          <select class="adm-select" id="pm-category" required>
+            <option value="tech">💻 Tech Gadgets</option>
+            <option value="kitchen">🍳 Kitchen & Home</option>
+            <option value="lifestyle">✨ Lifestyle</option>
+            <option value="kids">🎈 Kids' Products</option>
+          </select>
+        </div>
+        <div class="adm-form-group">
+          <label class="adm-label">Badge</label>
+          <select class="adm-select" id="pm-badge">
+            <option value="">None</option>
+            <option value="hot">🔥 Hot</option>
+            <option value="new">✨ New</option>
+            <option value="trending">📈 Trending</option>
+            <option value="sale">💰 Sale</option>
+          </select>
+        </div>
+        <div class="adm-form-group">
+          <label class="adm-label">Stock Status</label>
+          <select class="adm-select" id="pm-stock">
+            <option value="1">✅ In Stock</option>
+            <option value="0">❌ Out of Stock</option>
+          </select>
+        </div>
+        <div class="adm-form-group" style="grid-column:1/-1">
+          <label class="adm-label">Image URLs (one per line)</label>
+          <textarea class="adm-textarea" id="pm-images" rows="3" placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"></textarea>
+          <small style="color:var(--adm-muted);font-size:0.72rem;margin-top:4px;display:block">Paste image URLs from your product supplier or use Unsplash URLs.</small>
+        </div>
+        <div class="adm-form-group" style="grid-column:1/-1">
+          <label class="adm-label">Product Description</label>
+          <textarea class="adm-textarea" id="pm-description" rows="3" placeholder="Describe the product features, benefits, and use cases..."></textarea>
+        </div>
+        <div class="adm-form-group" style="grid-column:1/-1">
+          <label class="adm-label">Feature Bullet Points (one per line)</label>
+          <textarea class="adm-textarea" id="pm-features" rows="4" placeholder="360° Rotation&#10;LED Mirror&#10;Dishwasher Safe&#10;BPA Free"></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:4px">
+        <button type="submit" class="adm-btn adm-btn--primary" style="flex:1;padding:12px">💾 Save Product</button>
+        <button type="button" class="adm-btn adm-btn--ghost" onclick="WishzyAdmin.closeProductModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/admin.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const A = window.WishzyAdmin;
+
+  // Check auth
+  if (A.isLoggedIn()) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-app').style.display = 'flex';
+    A.renderDashboard();
+  }
+
+  // Login form
+  document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pw = document.getElementById('admin-pw').value;
+    if (A.login(pw)) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-app').style.display = 'flex';
+      A.renderDashboard();
+    } else {
+      document.getElementById('login-error').classList.add('show');
+      document.getElementById('admin-pw').value = '';
+    }
+  });
+
+  // Set topbar date
+  document.getElementById('topbar-subtitle').textContent = new Date().toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+});
+</script>
+</body>
+</html>

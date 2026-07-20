@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — Wishzy</title>
+  <meta name="description" content="Frequently asked questions about Wishzy orders, Cash on Delivery, shipping, tracking, and returns.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>❓</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .faq-layout { display:grid;grid-template-columns:240px 1fr;gap:var(--space-2xl);align-items:start; }
+    .faq-nav { position:sticky;top:calc(var(--nav-h) + var(--space-lg)); }
+    .faq-nav-item { display:block;padding:10px 14px;border-radius:var(--radius-md);font-size:0.875rem;font-weight:500;color:var(--clr-text-muted);cursor:pointer;transition:all var(--transition-fast);border:none;background:none;width:100%;text-align:left;margin-bottom:4px; }
+    .faq-nav-item:hover { background:var(--clr-bg-alt);color:var(--clr-text); }
+    .faq-nav-item.active { background:rgba(197,139,88,0.1);color:var(--clr-accent);font-weight:600; }
+    .faq-section-title { font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--clr-text-muted);margin:var(--space-lg) 0 var(--space-md);padding-bottom:var(--space-sm);border-bottom:1px solid var(--clr-border); }
+    @media(max-width:768px) { .faq-layout { grid-template-columns:1fr; } .faq-nav { display:none; } }
+  </style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="page-hero" style="text-align:center;">
+  <div class="container">
+    <div class="breadcrumb" style="justify-content:center"><a href="index.html">Home</a><span class="breadcrumb__sep">/</span><span>FAQ</span></div>
+    <h1 class="display-2 fade-up">Frequently Asked Questions</h1>
+    <p class="text-muted fade-up stagger-1">Everything you need to know about ordering, shipping, COD, and returns on Wishzy.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="faq-layout">
+
+      <!-- Sidebar Nav -->
+      <div class="faq-nav fade-in visible">
+        <div class="caption text-muted mb-md" style="font-weight:700;text-transform:uppercase;letter-spacing:0.08em;font-size:0.72rem">Jump to Section</div>
+        <button class="faq-nav-item active" onclick="scrollTo('#faq-ordering')">📋 Ordering</button>
+        <button class="faq-nav-item" onclick="scrollTo('#faq-cod')">💵 Cash on Delivery</button>
+        <button class="faq-nav-item" onclick="scrollTo('#faq-shipping')">🚚 Shipping</button>
+        <button class="faq-nav-item" onclick="scrollTo('#faq-tracking')">📦 Tracking</button>
+        <button class="faq-nav-item" onclick="scrollTo('#faq-returns')">🔄 Returns</button>
+        <button class="faq-nav-item" onclick="scrollTo('#faq-products')">🛒 Products</button>
+      </div>
+
+      <!-- FAQ Content -->
+      <div class="fade-up">
+
+        <!-- Ordering -->
+        <div id="faq-ordering">
+          <div class="faq-section-title">📋 Ordering</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How do I place an order on Wishzy?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Simply browse our products, click <strong>"Add to Cart"</strong>, then go to Cart and click <strong>"Proceed to Checkout"</strong>. Fill in your name, mobile number, and delivery address — then hit <strong>"Confirm Cash on Delivery Order"</strong>. That's it! You'll receive an order confirmation on screen.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Can I order multiple products at once?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes! You can add as many products as you like to your cart. All items will be delivered together in a single shipment where possible.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Can I cancel my order after placing it?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes, you can cancel your order within <strong>24 hours</strong> of placing it by contacting our support team on WhatsApp or via the Contact page. Once an order has been shipped, cancellations are not possible.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Will I receive an order confirmation?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes. After placing your order, you'll see a detailed confirmation screen with your <strong>Order ID</strong>. Our team will also call you within 24–48 hours to verify your order before dispatch.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COD -->
+        <div id="faq-cod" class="mt-xl">
+          <div class="faq-section-title">💵 Cash on Delivery</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Is Cash on Delivery available on all products?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner"><strong>Yes — 100% of all Wishzy orders are Cash on Delivery.</strong> We do not accept any online payment, credit/debit cards, or UPI. You only pay when the delivery partner arrives at your door.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Do I need to pay any advance amount?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Absolutely not. <strong>No advance payment is required.</strong> Place your order for free and only pay the exact order amount in cash when it's delivered to your address.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              What if I don't have exact change?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Our delivery agents typically carry change. However, we recommend keeping the exact amount ready to make delivery smoother. You'll see your exact total on the order confirmation screen.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              What happens if I refuse delivery?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">If you refuse delivery without prior notice, your account may be flagged and future COD orders may be restricted. If you wish to cancel, please contact us at least 24 hours before the expected delivery date.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping -->
+        <div id="faq-shipping" class="mt-xl">
+          <div class="faq-section-title">🚚 Shipping & Delivery</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How much does shipping cost?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner"><strong>Shipping is completely FREE</strong> on all Wishzy orders, regardless of order value. No minimum order required.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How long does delivery take?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Standard delivery takes <strong>3–7 business days</strong> across India. Metro cities (Mumbai, Delhi, Bengaluru, Chennai, Hyderabad) typically receive orders in 3–4 days. Remote areas may take up to 7–10 days.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Do you ship to all states in India?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes! We deliver pan-India to all 28 states and 8 union territories. This includes Tier 1, Tier 2, and Tier 3 cities.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tracking -->
+        <div id="faq-tracking" class="mt-xl">
+          <div class="faq-section-title">📦 Order Tracking</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How do I track my order?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Once your order is dispatched, you'll receive an SMS with a tracking link. You can also visit our <a href="track-order.html" style="color:var(--clr-accent)">Track Order page</a> and enter your Order ID and mobile number to check live status.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              When will I get my tracking number?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Your tracking number is usually shared within <strong>24–48 hours</strong> of order confirmation. You'll receive it via SMS on your registered mobile number.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Returns -->
+        <div id="faq-returns" class="mt-xl">
+          <div class="faq-section-title">🔄 Returns & Exchanges</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              What is Wishzy's return policy?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">We offer a <strong>7-day return policy</strong> from the date of delivery. If you received a damaged, defective, or incorrect item, contact us immediately with a photo and we'll arrange a free pickup and replacement or refund.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How do I initiate a return?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">To initiate a return: 1) Go to our <a href="contact.html" style="color:var(--clr-accent)">Contact page</a> or WhatsApp us. 2) Share your Order ID and a photo of the issue. 3) Our team will arrange a free pickup within 48 hours. 4) Replacement or refund processed within 5–7 business days.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Can I exchange a product for a different one?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes! If your product is unused and in original packaging, you can request an exchange within 7 days. Contact our support team and we'll help you choose an alternative.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div id="faq-products" class="mt-xl">
+          <div class="faq-section-title">🛒 Products</div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              Are Wishzy products genuine?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">Yes. Every product listed on Wishzy is sourced from verified suppliers and quality-checked by our team before being added to our catalogue. Product photos are accurate representations of what you'll receive.</div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <button class="accordion-trigger" aria-expanded="false">
+              How often are new products added?
+              <div class="accordion-trigger__icon">+</div>
+            </button>
+            <div class="accordion-content">
+              <div class="accordion-content__inner">We add new trending products <strong>every week</strong>. Follow us on Instagram and Facebook to be the first to know about new arrivals and exclusive deals.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Still need help -->
+        <div class="card mt-xl" style="padding:var(--space-xl);background:var(--clr-bg-alt);border:none;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:var(--space-md)">🤝</div>
+          <h3 class="h3 mb-sm">Still Have Questions?</h3>
+          <p class="text-muted mb-lg">Our support team is always happy to help. Reach out via the contact page.</p>
+          <a href="contact.html" class="btn btn--primary">📩 Contact Support</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script>
+function scrollTo(selector) {
+  document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.faq-nav-item').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

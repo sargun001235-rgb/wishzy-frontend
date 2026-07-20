@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Track Your Order — Wishzy</title>
+  <meta name="description" content="Track your Wishzy order status. Enter your Order ID and mobile number to check live delivery updates.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .track-result { display:none; }
+    .track-result.show { display:block; }
+    .timeline { position:relative; padding-left:32px; }
+    .timeline::before { content:''; position:absolute; left:10px; top:0; bottom:0; width:2px; background:var(--clr-border); }
+    .timeline-step { position:relative; margin-bottom:var(--space-lg); }
+    .timeline-dot { position:absolute; left:-32px; top:4px; width:20px; height:20px; border-radius:50%; background:var(--clr-bg-dark); border:2px solid var(--clr-border); display:flex; align-items:center; justify-content:center; font-size:0.65rem; }
+    .timeline-step.done .timeline-dot { background:var(--clr-success); border-color:var(--clr-success); color:white; }
+    .timeline-step.active .timeline-dot { background:var(--clr-accent); border-color:var(--clr-accent); color:white; box-shadow:0 0 0 4px rgba(197,139,88,0.2); }
+    .timeline-title { font-weight:600; font-size:0.9rem; }
+    .timeline-sub { font-size:0.78rem; color:var(--clr-text-muted); margin-top:2px; }
+    .track-container { max-width:640px; margin-inline:auto; }
+  </style>
+</head>
+<body>
+
+<div id="nav-placeholder"></div>
+
+<div class="page-hero" style="text-align:center;">
+  <div class="container">
+    <div class="breadcrumb" style="justify-content:center"><a href="index.html">Home</a><span class="breadcrumb__sep">/</span><span>Track Order</span></div>
+    <h1 class="display-2 fade-up">Track Your Order</h1>
+    <p class="text-muted fade-up stagger-1">Enter your Order ID and mobile number to get live delivery updates.</p>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="track-container">
+
+      <!-- Search Form -->
+      <div class="card fade-up" style="padding:var(--space-xl);margin-bottom:var(--space-xl)">
+        <h2 class="h2 mb-lg" style="text-align:center">🔍 Enter Order Details</h2>
+        <form id="track-form">
+          <div class="form-group">
+            <label class="form-label" for="t-orderid">Order ID *</label>
+            <input class="form-input" id="t-orderid" type="text" placeholder="e.g. WZ-ABC123" required style="font-family:monospace;letter-spacing:0.05em">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-mobile">Registered Mobile Number *</label>
+            <input class="form-input" id="t-mobile" type="tel" placeholder="10-digit mobile number" required maxlength="10">
+          </div>
+          <button type="submit" class="btn btn--primary btn--full btn--lg" id="track-btn">
+            📦 Track My Order
+          </button>
+        </form>
+      </div>
+
+      <!-- Result -->
+      <div id="track-result" class="track-result fade-up">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Info Cards -->
+      <div class="grid-2 fade-up stagger-2">
+        <div class="card" style="padding:var(--space-lg);text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:var(--space-sm)">📱</div>
+          <div class="fw-600 mb-sm">SMS Updates</div>
+          <div class="caption text-muted">You'll receive SMS updates at every step of your delivery journey.</div>
+        </div>
+        <div class="card" style="padding:var(--space-lg);text-align:center">
+          <div style="font-size:1.8rem;margin-bottom:var(--space-sm)">⏱️</div>
+          <div class="fw-600 mb-sm">3–7 Day Delivery</div>
+          <div class="caption text-muted">Standard delivery across India. Metro cities typically 3–4 days.</div>
+        </div>
+      </div>
+
+      <div class="card mt-lg fade-up stagger-3" style="padding:var(--space-xl);background:rgba(197,139,88,0.05);border-color:rgba(197,139,88,0.2);">
+        <div style="display:flex;gap:var(--space-md);align-items:flex-start">
+          <div style="font-size:1.5rem;flex-shrink:0">💡</div>
+          <div>
+            <div class="fw-600 mb-sm">Don't have your Order ID?</div>
+            <p class="caption text-muted">Your Order ID was shown on the confirmation screen after checkout (format: WZ-XXXXXXX). Our team may also send it via SMS. If you can't find it, <a href="contact.html" style="color:var(--clr-accent)">contact our support team</a> with your name and mobile number.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Third-party tracking integration point -->
+      <div class="card mt-lg fade-up stagger-4" style="padding:var(--space-xl);background:var(--clr-bg-alt);border-style:dashed;">
+        <div class="caption text-muted text-center" style="font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-md)">🔌 Tracking Integration Placeholder</div>
+        <p class="caption text-muted text-center">Insert your courier partner's tracking widget (Delhivery, Shiprocket, BlueDart, Ekart, etc.) here. Simply paste their embed script or iframe in this section.</p>
+        <div id="third-party-tracker" style="min-height:80px;border:1px dashed var(--clr-border);border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;margin-top:var(--space-md)">
+          <span class="caption text-muted">[ Courier tracking script goes here ]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/store.js"></script>
+<script src="js/partials.js"></script>
+<script src="js/ui.js"></script>
+<script>
+document.getElementById('track-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const S = window.WishzyStore;
+  const orderId = document.getElementById('t-orderid').value.trim().toUpperCase();
+  const mobile = document.getElementById('t-mobile').value.trim();
+  const resultEl = document.getElementById('track-result');
+  const btn = document.getElementById('track-btn');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Searching...';
+
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '📦 Track My Order';
+
+    const order = S.getOrderById(orderId);
+
+    if (!order || order.customer.mobile !== mobile) {
+      resultEl.innerHTML = `
+        <div class="card" style="padding:var(--space-xl);border-color:var(--clr-error);background:rgba(192,57,43,0.04);margin-bottom:var(--space-lg)">
+          <div style="text-align:center">
+            <div style="font-size:2.5rem;margin-bottom:var(--space-md)">❌</div>
+            <h3 class="h3 mb-sm" style="color:var(--clr-error)">Order Not Found</h3>
+            <p class="text-muted">We couldn't find an order with that ID and mobile number. Please check your details and try again.</p>
+            <a href="contact.html" class="btn btn--outline mt-lg" style="font-size:0.875rem">Contact Support</a>
+          </div>
+        </div>`;
+      resultEl.classList.add('show');
+      return;
+    }
+
+    // Determine step from status
+    const statusSteps = ['Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
+    const currentStep = statusSteps.indexOf(order.status);
+    const icons = ['✅', '📦', '🚚', '🛵', '🏠'];
+
+    const stepsHTML = statusSteps.map((s, i) => {
+      const state = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+      return `
+        <div class="timeline-step ${state}">
+          <div class="timeline-dot">${i <= currentStep ? '✓' : ''}</div>
+          <div class="timeline-title">${icons[i]} ${s}</div>
+          <div class="timeline-sub">${i === currentStep ? 'Current Status' : i < currentStep ? 'Completed' : 'Pending'}</div>
+        </div>`;
+    }).join('');
+
+    resultEl.innerHTML = `
+      <div class="card" style="padding:var(--space-xl);margin-bottom:var(--space-lg)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:var(--space-md);margin-bottom:var(--space-xl)">
+          <div>
+            <div class="caption text-muted mb-sm">Order ID</div>
+            <div class="fw-700" style="font-family:monospace;font-size:1.1rem;letter-spacing:0.05em">${order.id}</div>
+          </div>
+          <span class="pill pill--${order.status === 'Delivered' ? 'success' : 'info'}">${order.status === 'Delivered' ? '✅' : '🔄'} ${order.status}</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl);padding:var(--space-lg);background:var(--clr-bg-alt);border-radius:var(--radius-md)">
+          <div><div class="caption text-muted mb-xs">Customer</div><div class="fw-600">${order.customer.name}</div></div>
+          <div><div class="caption text-muted mb-xs">Order Date</div><div class="fw-600">${new Date(order.date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div></div>
+          <div><div class="caption text-muted mb-xs">Items</div><div class="fw-600">${order.items.length} item(s)</div></div>
+          <div><div class="caption text-muted mb-xs">Total (COD)</div><div class="fw-600 text-accent">${S.formatPrice(order.total)}</div></div>
+        </div>
+
+        <div>
+          <div class="fw-600 mb-lg">Delivery Status</div>
+          <div class="timeline">${stepsHTML}</div>
+        </div>
+      </div>`;
+
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    window.WishzyUI?.toast('Order found! ✅', 'success');
+  }, 1000);
+});
+</script>
+</body>
+</html>
