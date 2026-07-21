@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       // Validate all fields
@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = true;
       btn.textContent = '⏳ Placing Order...';
 
-      // Simulate processing
-      setTimeout(async () => {
+      // Process order
+      try {
         const order = S.placeOrder(data);
         if (order) {
           
@@ -101,9 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 note: "Imported from Wishzy COD via Checkout (Secure)",
                 tags: "Wishzy, COD",
                 financial_status: "pending",
+                payment_gateway_names: ["Cash on Delivery (COD)"],
                 line_items: order.items.map(item => ({
-                  title: item.title,
-                  price: item.price,
+                  variant_id: item.variantId || item.productId,
                   quantity: item.qty
                 })),
                 customer: {
@@ -153,7 +153,11 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.textContent = '💰 Confirm Cash on Delivery Order';
           window.WishzyUI?.toast('Something went wrong. Please try again.', 'error');
         }
-      }, 800);
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = '💰 Confirm Cash on Delivery Order';
+        window.WishzyUI?.toast('Something went wrong. Please try again.', 'error');
+      }
     });
   }
 
