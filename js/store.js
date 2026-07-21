@@ -269,16 +269,18 @@ const WishzyStore = (() => {
   };
 
   /* ── SHOPIFY PUBLIC JSON SYNC ─────────────────────────────── */
-  const fetchProductsFromJson = async () => {
+  const fetchProducts = async () => {
     try {
       // Fetch directly from our serverless proxy for optimistic rendering
       let endpoint = `/api/shopify-proxy?t=${Date.now()}`;
 
       const response = await fetch(endpoint, { cache: 'no-store' });
-      if (!response.ok) throw new Error('Failed to fetch proxy products');
+      if (!response.ok) throw new Error('Failed to fetch proxy products: ' + response.statusText);
 
       const data = await response.json();
-      if (!data.products) return false;
+      if (!data.products || data.products.length === 0) {
+        throw new Error('Empty products array returned from proxy');
+      }
 
       const importedProducts = data.products.map(p => {
         const variant = p.variants && p.variants[0];
@@ -307,7 +309,25 @@ const WishzyStore = (() => {
       LS.set('wishzy_products', importedProducts);
       return true;
     } catch (e) {
-      console.error('Failed to sync from public products.json:', e);
+      console.error('Live API fetch failed:', e);
+      // IMMEDIATELY fall back to loading products from the local data/products.json file
+      try {
+        console.log('Falling back to local data/products.json...');
+        const fallbackRes = await fetch('data/products.json');
+        if (!fallbackRes.ok) throw new Error(`HTTP error! status: ${fallbackRes.status}`);
+        
+        const fallbackData = await fallbackRes.json();
+        const validProducts = Array.isArray(fallbackData) ? fallbackData : (fallbackData.products || []);
+        
+        if (validProducts && validProducts.length > 0) {
+          LS.set('wishzy_products', validProducts);
+          return true; // We successfully loaded fallback products
+        } else {
+          throw new Error('Fallback JSON is empty or invalid format');
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback fetch also failed:', fallbackErr);
+      }
       return false;
     }
   };
@@ -465,7 +485,7 @@ const WishzyStore = (() => {
     getWishlist, toggleWishlist, isWishlisted,
     getOrders, getOrderById, placeOrder, updateOrderStatus,
     getLoggedInCustomer, loginCustomer, logoutCustomer,
-    fetchProductsFromJson,
+    fetchProducts,
     formatPrice, getDiscount, getStars,
     renderProductCard, goToProduct, addToCartUI, handleWishlist,
     dispatchCartUpdate
@@ -500,9 +520,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Asynchronous fetch
-  WishzyStore.fetchProductsFromJson().then(success => {
+  WishzyStore.fetchProducts().then(success => {
     if (success && window.renderProducts) {
-      // Re-render when fresh data arrives
+      // Re-render when valid data arrives (either live or fallback)
       window.renderProducts();
     }
   });
