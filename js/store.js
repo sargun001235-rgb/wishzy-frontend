@@ -99,6 +99,19 @@ const WishzyStore = (() => {
       return true;
     } catch (e) {
       console.error('Live API fetch failed:', e);
+      try {
+        console.log('Falling back to local data/products.json...');
+        const fallbackRes = await fetch('data/products.json');
+        if (!fallbackRes.ok) throw new Error(`HTTP error! status: ${fallbackRes.status}`);
+        const fallbackData = await fallbackRes.json();
+        const validProducts = Array.isArray(fallbackData) ? fallbackData : (fallbackData.products || []);
+        if (validProducts && validProducts.length > 0) {
+          LS.set('wishzy_products', validProducts);
+          return true;
+        }
+      } catch (fallbackErr) {
+        console.error('Fallback fetch also failed:', fallbackErr);
+      }
       return false;
     }
   };
@@ -285,9 +298,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   // 2. Await the proxy API response directly
-  const success = await WishzyStore.fetchProducts();
-  if (success && window.renderProducts) {
-    // 3. Render directly after the fetch successfully resolves
+  await WishzyStore.fetchProducts();
+  if (window.renderProducts) {
+    // 3. Render directly after the fetch attempt resolves
     window.renderProducts();
   }
 });
