@@ -1,56 +1,55 @@
 exports.handler = async (event, context) => {
-  // CORS Headers for local development, Netlify handles production
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS'
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: 'OK' };
-  }
-
-  // Allow both GET and POST
-  if (event.httpMethod !== 'POST' && event.httpMethod !== 'GET') {
-    return { statusCode: 405, headers, body: 'Method Not Allowed' };
-  }
-
-  // Load configuration from environment variables
-  const storeUrl = process.env.SHOPIFY_STORE_URL;
-  const adminToken = process.env.SHOPIFY_ADMIN_TOKEN;
-  const clientId = process.env.SHOPIFY_CLIENT_ID;
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
-
-  if (!storeUrl || (!adminToken && (!clientId || !clientSecret))) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: 'Shopify credentials missing. Provide either SHOPIFY_ADMIN_TOKEN or both SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET.' })
-    };
-  }
-
-  // Helper to dynamically resolve the access token
-  const resolveAccessToken = async () => {
-    if (adminToken) return adminToken; // Fallback for legacy setups
-    
-    // Perform Client Credentials Grant for new Dev Dashboard setups
-    const tokenEndpoint = `https://${storeUrl}/admin/oauth/access_token`;
-    const response = await fetch(tokenEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: 'client_credentials'
-      })
-    });
-    
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error_description || 'Failed to negotiate OAuth token');
-    return data.access_token;
-  };
-
   try {
+    if (event.httpMethod === 'OPTIONS') {
+      return { statusCode: 200, headers, body: 'OK' };
+    }
+
+    // Allow both GET and POST
+    if (event.httpMethod !== 'POST' && event.httpMethod !== 'GET') {
+      return { statusCode: 405, headers, body: 'Method Not Allowed' };
+    }
+
+    // Load configuration from environment variables
+    const storeUrl = process.env.SHOPIFY_STORE_URL;
+    const adminToken = process.env.SHOPIFY_ADMIN_TOKEN;
+    const clientId = process.env.SHOPIFY_CLIENT_ID;
+    const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+
+    if (!storeUrl || (!adminToken && (!clientId || !clientSecret))) {
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ error: 'Proxy error' })
+      };
+    }
+
+    // Helper to dynamically resolve the access token
+    const resolveAccessToken = async () => {
+      if (adminToken) return adminToken; // Fallback for legacy setups
+      
+      // Perform Client Credentials Grant for new Dev Dashboard setups
+      const tokenEndpoint = `https://${storeUrl}/admin/oauth/access_token`;
+      const response = await fetch(tokenEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          client_secret: clientSecret,
+          grant_type: 'client_credentials'
+        })
+      });
+      
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error_description || 'Failed to negotiate OAuth token');
+      return data.access_token;
+    };
+
     let action, payload;
 
     if (event.httpMethod === 'GET') {
@@ -172,7 +171,7 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message || 'Internal Server Error' })
+      body: JSON.stringify({ error: "Proxy error" })
     };
   }
 };
