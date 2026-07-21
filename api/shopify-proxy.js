@@ -64,7 +64,7 @@ exports.handler = async (event, context) => {
 
     if (action === 'test') {
       const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2023-10/graphql.json`;
+      const endpoint = `https://${storeUrl}/admin/api/2024-01/graphql.json`;
       const query = `{ shop { name primaryDomain { url } } }`;
       
       const response = await fetch(endpoint, {
@@ -97,7 +97,7 @@ exports.handler = async (event, context) => {
 
     if (action === 'push_order') {
       const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2023-10/orders.json`;
+      const endpoint = `https://${storeUrl}/admin/api/2024-01/orders.json`;
       
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -118,7 +118,7 @@ exports.handler = async (event, context) => {
 
     if (action === 'get_customer_orders') {
       const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2023-10/graphql.json`;
+      const endpoint = `https://${storeUrl}/admin/api/2024-01/graphql.json`;
       const query = `{
         orders(first: 20, query: "phone:${payload.phone}") {
           edges {

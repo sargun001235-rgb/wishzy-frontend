@@ -98,26 +98,24 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const payload = {
               order: {
-                note: "Imported from Wishzy COD via Checkout (Secure)",
-                tags: "Wishzy, COD",
-                financial_status: "pending",
-                payment_gateway_names: ["Cash on Delivery (COD)"],
                 line_items: order.items.map(item => ({
                   variant_id: item.variantId || item.productId,
                   quantity: item.qty
                 })),
                 customer: {
-                  first_name: order.customer.name.split(' ')[0] || order.customer.name,
-                  last_name: order.customer.name.split(' ').slice(1).join(' ') || '.',
+                  first_name: order.customer.name,
                   phone: order.customer.mobile
                 },
                 shipping_address: {
+                  first_name: order.customer.name,
                   address1: order.customer.address,
                   city: order.customer.city,
                   province: order.customer.state,
-                  zip: order.customer.pincode,
-                  country: "IN"
-                }
+                  country: "India",
+                  phone: order.customer.mobile
+                },
+                financial_status: "pending",
+                gateway: "Cash on Delivery (COD)"
               }
             };
 
