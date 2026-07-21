@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  // CORS Headers
+  // 1. CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -11,7 +11,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Domain Sanitize
     const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || '';
     const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
     const clientId = process.env.SHOPIFY_CLIENT_ID;
@@ -21,7 +20,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: false, message: 'Missing Shopify credentials' });
     }
 
-    // Get Temporary Access Token via Client Credentials
+    // Client Credentials Access Token Exchange
     const tokenResponse = await fetch(`https://${domain}/admin/oauth/access_token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,7 +39,7 @@ export default async function handler(req, res) {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    // --- HANDLE GET REQUEST (FETCH PRODUCTS) ---
+    // --- GET METHOD: FETCH PRODUCTS ---
     if (req.method === 'GET') {
       const productsResponse = await fetch(`https://${domain}/admin/api/2024-01/products.json`, {
         method: 'GET',
@@ -53,7 +52,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true, products: productsData.products || [] });
     }
 
-    // --- HANDLE POST REQUEST (CREATE SHOPIFY ORDER) ---
+    // --- POST METHOD: CREATE SHOPIFY ORDER ---
     if (req.method === 'POST') {
       const orderPayload = req.body;
       const createOrderResponse = await fetch(`https://${domain}/admin/api/2024-01/orders.json`, {
