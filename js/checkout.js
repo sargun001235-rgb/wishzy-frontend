@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const fullAddress = `${address}, Pincode: ${pincode}`;
 
-      // Build Shopify Payload
+    // Build Shopify Payload (Phone conflict fix)
       const orderPayload = {
         order: {
           line_items: cart.map(item => ({
@@ -84,11 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
             price: String(item.price || "0").replace(/[^0-9.]/g, ''),
             quantity: item.quantity || 1
           })),
-          customer: {
-            first_name: name,
-            phone: mobile,
-            email: email
-          },
+          phone: mobile,
+          email: email || undefined,
           shipping_address: {
             first_name: name,
             address1: fullAddress,
@@ -101,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
           gateway: "Cash on Delivery (COD)"
         }
       };
-
+      
       try {
         const placeBtn = document.getElementById('place-order-btn');
         if (placeBtn) {
