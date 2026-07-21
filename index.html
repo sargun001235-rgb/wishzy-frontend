@@ -272,7 +272,7 @@
 <script src="js/partials.js"></script>
 <script src="js/ui.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+window.renderProducts = function() {
   const S = window.WishzyStore;
 
   // Hero showcase
@@ -306,6 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const ratingCounter = document.querySelector('[data-count="4"]');
   if (ratingCounter) {
     ratingCounter.textContent = '4.8★';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Try to render immediately if cache exists
+  if (window.WishzyStore && window.WishzyStore.getProducts().length > 0) {
+    window.renderProducts();
   }
 });
 </script>
