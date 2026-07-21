@@ -56,8 +56,8 @@ document.querySelector('form').addEventListener('submit', async function(e) {
     localStorage.removeItem('cart');
     localStorage.removeItem('wishzy_cart');
     
-    // Success Page Par Redirect
-    window.location.href = '/order-success.html'; // (Tere success page ka path)
+  alert("🎉 Order Placed Successfully! Order ID: " + (data?.data?.order?.name || 'Confirmed'));
+window.location.href = '/';
 
   } catch (err) {
     console.error("Order submit failed:", err);
