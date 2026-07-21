@@ -1,218 +1,218 @@
 [
-    {
-      "id": "p001",
-      "title": "Rotating Makeup Organizer with LED Mirror",
-      "category": "Lifestyle",
-      "categorySlug": "lifestyle",
-      "price": 1299,
-      "originalPrice": 2499,
-      "images": [
-        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80"
-      ],
-      "badge": "hot",
-      "rating": 4.8,
-      "reviews": 2341,
-      "inStock": true,
-      "description": "The ultimate 360° rotating makeup organizer featuring a built-in LED illuminated mirror. Perfect for vanity tables with 20+ compartments for all your beauty essentials.",
-      "features": ["360° Rotation", "LED Mirror", "20+ Compartments", "Easy Assembly"]
-    },
-    {
-      "id": "p002",
-      "title": "Smart Electric Egg Cooker & Steamer",
-      "category": "Kitchen & Home",
-      "categorySlug": "kitchen",
-      "price": 899,
-      "originalPrice": 1799,
-      "images": [
-        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
-        "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&q=80"
-      ],
-      "badge": "trending",
-      "rating": 4.6,
-      "reviews": 1876,
-      "inStock": true,
-      "description": "Cook up to 7 eggs simultaneously to your perfect consistency — soft, medium, or hard-boiled. Auto shut-off safety feature included.",
-      "features": ["7-Egg Capacity", "Auto Shut-off", "BPA Free", "Dishwasher Safe"]
-    },
-    {
-      "id": "p003",
-      "title": "Kids Gravity Maze Building Blocks Set",
-      "category": "Kids' Products",
-      "categorySlug": "kids",
-      "price": 1599,
-      "originalPrice": 2999,
-      "images": [
-        "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=600&q=80",
-        "https://images.unsplash.com/photo-1618355776464-8666794d2520?w=600&q=80"
-      ],
-      "badge": "new",
-      "rating": 4.9,
-      "reviews": 987,
-      "inStock": true,
-      "description": "Award-winning STEM building set with 150+ vibrant pieces. Develops logical thinking, creativity and problem-solving skills for kids aged 4–12.",
-      "features": ["150+ Pieces", "STEM Certified", "Ages 4–12", "Non-Toxic"]
-    },
-    {
-      "id": "p004",
-      "title": "Mini Wireless Bluetooth Keyboard",
-      "category": "Tech Gadgets",
-      "categorySlug": "tech",
-      "price": 1199,
-      "originalPrice": 2199,
-      "images": [
-        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80",
-        "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80"
-      ],
-      "badge": "hot",
-      "rating": 4.5,
-      "reviews": 3201,
-      "inStock": true,
-      "description": "Ultra-slim backlit Bluetooth keyboard compatible with all devices. 3-device multi-connect, 2000mAh battery, silent keystrokes.",
-      "features": ["3-Device Connect", "Backlit Keys", "2000mAh Battery", "Silent Typing"]
-    },
-    {
-      "id": "p005",
-      "title": "Portable Electric Foot Massager",
-      "category": "Lifestyle",
-      "categorySlug": "lifestyle",
-      "price": 2199,
-      "originalPrice": 3999,
-      "images": [
-        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80",
-        "https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=600&q=80"
-      ],
-      "badge": "sale",
-      "rating": 4.7,
-      "reviews: 1543,
-      "inStock": true,
-      "description": "Deep-kneading shiatsu foot massager with heat therapy and adjustable intensity modes. Relieve tired feet after long days.",
-      "features": ["Heat Therapy", "5 Intensity Modes", "Auto Shut-off", "Foldable"]
-    },
-    {
-      "id": "p006",
-      "title": "Stainless Steel Vegetable Chopper Pro",
-      "category": "Kitchen & Home",
-      "categorySlug": "kitchen",
-      "price": 799,
-      "originalPrice": 1499,
-      "images": [
-        "https://images.unsplash.com/photo-1609167830220-7164aa360951?w=600&q=80",
-        "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80"
-      ],
-      "badge": "trending",
-      "rating": 4.4,
-      "reviews: 4521,
-      "inStock": true,
-      "description": "Multi-functional vegetable chopper with 8 interchangeable blades. Chop, slice, dice, and julienne in seconds. Compact and easy to clean.",
-      "features": ["8 Blade Types", "Dishwasher Safe", "Large Container", "Non-slip Base"]
-    },
-    {
-      "id": "p007",
-      "title": "Kids LED Drawing Tablet Glow Pad",
-      "category": "Kids' Products",
-      "categorySlug": "kids",
-      "price": 699,
-      "originalPrice": 1399,
-      "images": [
-        "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80",
-        "https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?w=600&q=80"
-      ],
-      "badge": "new",
-      "rating": 4.8,
-      "reviews: 2109,
-      "inStock": true,
-      "description": "Magical light-up drawing board that lets kids trace and create colorful artwork with special LED light stylus pens. No mess, endless creativity!",
-      "features": ["LED Light Effect", "4 Color Pens", "A4 Size Board", "Ages 3+"]
-    },
-    {
-      "id": "p008",
-      "title": "Smart RGB Desk Lamp with Phone Charger",
-      "category": "Tech Gadgets",
-      "categorySlug": "tech",
-      "price": 1499,
-      "originalPrice": 2799,
-      "images": [
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
-        "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80"
-      ],
-      "badge": "hot",
-      "rating": 4.6,
-      "reviews: 889,
-      "inStock": true,
-      "description": "Adjustable RGB desk lamp with 10 brightness levels and built-in 15W wireless phone charger. Touch control with USB port for extra devices.",
-      "features": ["RGB 16M Colors", "15W Wireless Charge", "Touch Control", "USB Port"]
-    },
-    {
-      "id": "p009",
-      "title": "Silicone Air Fryer Liner Set (5 Pcs)",
-      "category": "Kitchen & Home",
-      "categorySlug": "kitchen",
-      "price": 499,
-      "originalPrice": 999,
-      "images": [
-        "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&q=80",
-        "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&q=80"
-      ],
-      "badge": "sale",
-      "rating": 4.5,
-      "reviews: 6782,
-      "inStock": true,
-      "description": "Set of 5 non-stick silicone liners for all sizes of air fryers. Food-grade silicone, reusable, dishwasher-safe. Say goodbye to messy cleanups.",
-      "features": ["Food-Grade Silicone", "Reusable", "5 Sizes Included", "Heat-Resistant"]
-    },
-    {
-      "id": "p010",
-      "title": "Baby Sensory Soft Activity Gym Mat",
-      "category": "Kids' Products",
-      "categorySlug": "kids",
-      "price": 1899,
-      "originalPrice": 3499,
-      "images": [
-        "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&q=80",
-        "https://images.unsplash.com/photo-1590086782957-93c06ef21604?w=600&q=80"
-      ],
-      "badge": "new",
-      "rating": 4.9,
-      "reviews: 1234,
-      "inStock": true,
-      "description": "Premium padded play mat with 15 removable hanging toys, mirror, crinkle papers, and teethers. Stimulates 5 senses for newborns to 12 months.",
-      "features": ["15 Hanging Toys", "Padded & Washable", "Safe Dyes", "Newborn – 12mo"]
-    },
-    {
-      "id": "p011",
-      "title": "Magnetic Phone Car Mount with 360° Arm",
-      "category": "Tech Gadgets",
-      "categorySlug": "tech",
-      "price": 599,
-      "originalPrice": 1299,
-      "images": [
-        "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80",
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80"
-      ],
-      "badge": "trending",
-      "rating": 4.3,
-      "reviews: 5431,
-      "inStock": true,
-      "description": "Strong N52 magnet car mount with flexible arm and dashboard/vent mount options. Compatible with all smartphones, includes 4 metal plates.",
-      "features": ["N52 Magnet", "360° Rotation", "Universal Fit", "4 Metal Plates"]
-    },
-    {
-      "id": "p012",
-      "title": "Aromatherapy Essential Oil Diffuser",
-      "category": "Lifestyle",
-      "categorySlug": "lifestyle",
-      "price": 1099,
-      "originalPrice": 1999,
-      "images": [
-        "https://images.unsplash.com/photo-1626618012641-bfbca5a31239?w=600&q=80",
-        "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80"
-      ],
-      "badge": "hot",
-      "rating": 4.7,
-      "reviews: 3087,
-      "inStock": true,
-      "description": "500ml ultrasonic aroma diffuser with 7-color LED ambient light, auto shut-off, and whisper-quiet operation. Transforms any room into a spa.",
-      "features": ["500ml Capacity", "7-Color LED", "Whisper Quiet", "Auto Shut-off"]
-    }
-  ]
+  {
+    "id": "p001",
+    "title": "Rotating Makeup Organizer with LED Mirror",
+    "category": "Lifestyle",
+    "categorySlug": "lifestyle",
+    "price": 1299,
+    "originalPrice": 2499,
+    "images": [
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80"
+    ],
+    "badge": "hot",
+    "rating": 4.8,
+    "reviews": 2341,
+    "inStock": true,
+    "description": "The ultimate 360° rotating makeup organizer featuring a built-in LED illuminated mirror. Perfect for vanity tables with 20+ compartments for all your beauty essentials.",
+    "features": ["360° Rotation", "LED Mirror", "20+ Compartments", "Easy Assembly"]
+  },
+  {
+    "id": "p002",
+    "title": "Smart Electric Egg Cooker & Steamer",
+    "category": "Kitchen & Home",
+    "categorySlug": "kitchen",
+    "price": 899,
+    "originalPrice": 1799,
+    "images": [
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+      "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&q=80"
+    ],
+    "badge": "trending",
+    "rating": 4.6,
+    "reviews": 1876,
+    "inStock": true,
+    "description": "Cook up to 7 eggs simultaneously to your perfect consistency - soft, medium, or hard-boiled. Auto shut-off safety feature included.",
+    "features": ["7-Egg Capacity", "Auto Shut-off", "BPA Free", "Dishwasher Safe"]
+  },
+  {
+    "id": "p003",
+    "title": "Kids Gravity Maze Building Blocks Set",
+    "category": "Kids' Products",
+    "categorySlug": "kids",
+    "price": 1599,
+    "originalPrice": 2999,
+    "images": [
+      "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=600&q=80",
+      "https://images.unsplash.com/photo-1618355776464-8666794d2520?w=600&q=80"
+    ],
+    "badge": "new",
+    "rating": 4.9,
+    "reviews": 987,
+    "inStock": true,
+    "description": "Award-winning STEM building set with 150+ vibrant pieces. Develops logical thinking, creativity and problem-solving skills for kids aged 4-12.",
+    "features": ["150+ Pieces", "STEM Certified", "Ages 4-12", "Non-Toxic"]
+  },
+  {
+    "id": "p004",
+    "title": "Mini Wireless Bluetooth Keyboard",
+    "category": "Tech Gadgets",
+    "categorySlug": "tech",
+    "price": 1199,
+    "originalPrice": 2199,
+    "images": [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80",
+      "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80"
+    ],
+    "badge": "hot",
+    "rating": 4.5,
+    "reviews": 3201,
+    "inStock": true,
+    "description": "Ultra-slim backlit Bluetooth keyboard compatible with all devices. 3-device multi-connect, 2000mAh battery, silent keystrokes.",
+    "features": ["3-Device Connect", "Backlit Keys", "2000mAh Battery", "Silent Typing"]
+  },
+  {
+    "id": "p005",
+    "title": "Portable Electric Foot Massager",
+    "category": "Lifestyle",
+    "categorySlug": "lifestyle",
+    "price": 2199,
+    "originalPrice": 3999,
+    "images": [
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80",
+      "https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=600&q=80"
+    ],
+    "badge": "sale",
+    "rating": 4.7,
+    "reviews": 1543,
+    "inStock": true,
+    "description": "Deep-kneading shiatsu foot massager with heat therapy and adjustable intensity modes. Relieve tired feet after long days.",
+    "features": ["Heat Therapy", "5 Intensity Modes", "Auto Shut-off", "Foldable"]
+  },
+  {
+    "id": "p006",
+    "title": "Stainless Steel Vegetable Chopper Pro",
+    "category": "Kitchen & Home",
+    "categorySlug": "kitchen",
+    "price": 799,
+    "originalPrice": 1499,
+    "images": [
+      "https://images.unsplash.com/photo-1609167830220-7164aa360951?w=600&q=80",
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=600&q=80"
+    ],
+    "badge": "trending",
+    "rating": 4.4,
+    "reviews": 4521,
+    "inStock": true,
+    "description": "Multi-functional vegetable chopper with 8 interchangeable blades. Chop, slice, dice, and julienne in seconds. Compact and easy to clean.",
+    "features": ["8 Blade Types", "Dishwasher Safe", "Large Container", "Non-slip Base"]
+  },
+  {
+    "id": "p007",
+    "title": "Kids LED Drawing Tablet Glow Pad",
+    "category": "Kids' Products",
+    "categorySlug": "kids",
+    "price": 699,
+    "originalPrice": 1399,
+    "images": [
+      "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80",
+      "https://images.unsplash.com/photo-1574781330855-d0db8cc6a79c?w=600&q=80"
+    ],
+    "badge": "new",
+    "rating": 4.8,
+    "reviews": 2109,
+    "inStock": true,
+    "description": "Magical light-up drawing board that lets kids trace and create colorful artwork with special LED light stylus pens. No mess, endless creativity!",
+    "features": ["LED Light Effect", "4 Color Pens", "A4 Size Board", "Ages 3+"]
+  },
+  {
+    "id": "p008",
+    "title": "Smart RGB Desk Lamp with Phone Charger",
+    "category": "Tech Gadgets",
+    "categorySlug": "tech",
+    "price": 1499,
+    "originalPrice": 2799,
+    "images": [
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80"
+    ],
+    "badge": "hot",
+    "rating": 4.6,
+    "reviews": 889,
+    "inStock": true,
+    "description": "Adjustable RGB desk lamp with 10 brightness levels and built-in 15W wireless phone charger. Touch control with USB port for extra devices.",
+    "features": ["RGB 16M Colors", "15W Wireless Charge", "Touch Control", "USB Port"]
+  },
+  {
+    "id": "p009",
+    "title": "Silicone Air Fryer Liner Set (5 Pcs)",
+    "category": "Kitchen & Home",
+    "categorySlug": "kitchen",
+    "price": 499,
+    "originalPrice": 999,
+    "images": [
+      "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=600&q=80",
+      "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&q=80"
+    ],
+    "badge": "sale",
+    "rating": 4.5,
+    "reviews": 6782,
+    "inStock": true,
+    "description": "Set of 5 non-stick silicone liners for all sizes of air fryers. Food-grade silicone, reusable, dishwasher-safe. Say goodbye to messy cleanups.",
+    "features": ["Food-Grade Silicone", "Reusable", "5 Sizes Included", "Heat-Resistant"]
+  },
+  {
+    "id": "p010",
+    "title": "Baby Sensory Soft Activity Gym Mat",
+    "category": "Kids' Products",
+    "categorySlug": "kids",
+    "price": 1899,
+    "originalPrice": 3499,
+    "images": [
+      "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&q=80",
+      "https://images.unsplash.com/photo-1590086782957-93c06ef21604?w=600&q=80"
+    ],
+    "badge": "new",
+    "rating": 4.9,
+    "reviews": 1234,
+    "inStock": true,
+    "description": "Premium padded play mat with 15 removable hanging toys, mirror, crinkle papers, and teethers. Stimulates 5 senses for newborns to 12 months.",
+    "features": ["15 Hanging Toys", "Padded & Washable", "Safe Dyes", "Newborn - 12mo"]
+  },
+  {
+    "id": "p011",
+    "title": "Magnetic Phone Car Mount with 360° Arm",
+    "category": "Tech Gadgets",
+    "categorySlug": "tech",
+    "price": 599,
+    "originalPrice": 1299,
+    "images": [
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&q=80",
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80"
+    ],
+    "badge": "trending",
+    "rating": 4.3,
+    "reviews": 5431,
+    "inStock": true,
+    "description": "Strong N52 magnet car mount with flexible arm and dashboard/vent mount options. Compatible with all smartphones, includes 4 metal plates.",
+    "features": ["N52 Magnet", "360° Rotation", "Universal Fit", "4 Metal Plates"]
+  },
+  {
+    "id": "p012",
+    "title": "Aromatherapy Essential Oil Diffuser",
+    "category": "Lifestyle",
+    "categorySlug": "lifestyle",
+    "price": 1099,
+    "originalPrice": 1999,
+    "images": [
+      "https://images.unsplash.com/photo-1626618012641-bfbca5a31239?w=600&q=80",
+      "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&q=80"
+    ],
+    "badge": "hot",
+    "rating": 4.7,
+    "reviews": 3087,
+    "inStock": true,
+    "description": "500ml ultrasonic aroma diffuser with 7-color LED ambient light, auto shut-off, and whisper-quiet operation. Transforms any room into a spa.",
+    "features": ["500ml Capacity", "7-Color LED", "Whisper Quiet", "Auto Shut-off"]
+  }
+]
