@@ -1,177 +1,75 @@
-exports.handler = async (event, context) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-  };
+export default async function handler(req, res) {
+  // CORS Headers
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   try {
-    if (event.httpMethod === 'OPTIONS') {
-      return { statusCode: 200, headers, body: 'OK' };
-    }
-
-    // Allow both GET and POST
-    if (event.httpMethod !== 'POST' && event.httpMethod !== 'GET') {
-      return { statusCode: 405, headers, body: 'Method Not Allowed' };
-    }
-
-    // Load configuration from environment variables
-    const storeUrl = process.env.SHOPIFY_STORE_URL;
-    const adminToken = process.env.SHOPIFY_ADMIN_TOKEN;
+    // Domain Sanitize
+    const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || '';
+    const domain = rawDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
     const clientId = process.env.SHOPIFY_CLIENT_ID;
     const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
 
-    if (!storeUrl || (!adminToken && (!clientId || !clientSecret))) {
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ error: 'Proxy error' })
-      };
+    if (!domain || !clientId || !clientSecret) {
+      return res.status(200).json({ ok: false, message: 'Missing Shopify credentials' });
     }
 
-    // Helper to dynamically resolve the access token
-    const resolveAccessToken = async () => {
-      if (adminToken) return adminToken; // Fallback for legacy setups
-      
-      // Perform Client Credentials Grant for new Dev Dashboard setups
-      const tokenEndpoint = `https://${storeUrl}/admin/oauth/access_token`;
-      const response = await fetch(tokenEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          client_id: clientId,
-          client_secret: clientSecret,
-          grant_type: 'client_credentials'
-        })
-      });
-      
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error_description || 'Failed to negotiate OAuth token');
-      return data.access_token;
-    };
+    // Get Temporary Access Token via Client Credentials
+    const tokenResponse = await fetch(`https://${domain}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'client_credentials'
+      })
+    });
 
-    let action, payload;
-
-    if (event.httpMethod === 'GET') {
-      // Default GET to 'get_products'
-      action = 'get_products';
-      payload = event.queryStringParameters || {};
-    } else {
-      const body = JSON.parse(event.body);
-      action = body.action;
-      payload = body.payload;
+    if (!tokenResponse.ok) {
+      const errText = await tokenResponse.text();
+      return res.status(200).json({ ok: false, error: 'Token exchange failed', details: errText });
     }
 
-    if (action === 'test') {
-      const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2024-01/graphql.json`;
-      const query = `{ shop { name primaryDomain { url } } }`;
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
+
+    // --- HANDLE GET REQUEST (FETCH PRODUCTS) ---
+    if (req.method === 'GET') {
+      const productsResponse = await fetch(`https://${domain}/admin/api/2024-01/products.json`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': resolvedToken
-        },
-        body: JSON.stringify({ query })
-      });
-      
-      const data = await response.json();
-      if (data.errors) throw new Error(data.errors[0].message);
-      
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true, shop: data.data.shop }) };
-    }
-
-    if (action === 'get_products') {
-      const endpoint = `https://${storeUrl}/products.json?limit=250`;
-      const response = await fetch(endpoint);
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.errors || response.statusText);
-      
-      const responseHeaders = {
-        ...headers,
-        'Cache-Control': 's-maxage=1, stale-while-revalidate=59'
-      };
-      return { statusCode: 200, headers: responseHeaders, body: JSON.stringify({ success: true, products: data.products }) };
-    }
-
-    if (action === 'push_order') {
-      const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2024-01/orders.json`;
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': resolvedToken
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(JSON.stringify(data.errors) || response.statusText);
-      }
-      
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true, order: data.order }) };
-    }
-
-    if (action === 'get_customer_orders') {
-      const resolvedToken = await resolveAccessToken();
-      const endpoint = `https://${storeUrl}/admin/api/2024-01/graphql.json`;
-      const query = `{
-        orders(first: 20, query: "phone:${payload.phone}") {
-          edges {
-            node {
-              id
-              name
-              createdAt
-              displayFinancialStatus
-              displayFulfillmentStatus
-              totalPriceSet { shopMoney { amount } }
-              fulfillments {
-                trackingInfo {
-                  number
-                  url
-                }
-              }
-              lineItems(first: 10) {
-                edges {
-                  node {
-                    title
-                    quantity
-                    image { url }
-                  }
-                }
-              }
-            }
-          }
+          'X-Shopify-Access-Token': accessToken,
+          'Content-Type': 'application/json'
         }
-      }`;
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': resolvedToken
-        },
-        body: JSON.stringify({ query })
       });
-      
-      const data = await response.json();
-      if (data.errors) throw new Error(data.errors[0].message);
-      
-      const orders = data.data.orders.edges.map(e => e.node);
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true, orders }) };
+      const productsData = await productsResponse.json();
+      return res.status(200).json({ ok: true, products: productsData.products || [] });
     }
 
-    return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid action.' }) };
+    // --- HANDLE POST REQUEST (CREATE SHOPIFY ORDER) ---
+    if (req.method === 'POST') {
+      const orderPayload = req.body;
+      const createOrderResponse = await fetch(`https://${domain}/admin/api/2024-01/orders.json`, {
+        method: 'POST',
+        headers: {
+          'X-Shopify-Access-Token': accessToken,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderPayload)
+      });
+
+      const orderData = await createOrderResponse.json();
+      return res.status(200).json({ ok: createOrderResponse.ok, data: orderData });
+    }
 
   } catch (error) {
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: "Proxy error" })
-    };
+    return res.status(200).json({ ok: false, error: error.message });
   }
-};
+}
