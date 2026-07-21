@@ -495,34 +495,35 @@ const WishzyStore = (() => {
 window.WishzyStore = WishzyStore;
 
 // Auto-sync products on load for all users
-document.addEventListener('DOMContentLoaded', () => {
-  const cachedProducts = WishzyStore.getProducts();
+document.addEventListener('DOMContentLoaded', async () => {
+  let cachedProducts = WishzyStore.getProducts();
   
-  if (cachedProducts && cachedProducts.length > 0) {
-    // Optimistic render from cache immediately
-    if (window.renderProducts) window.renderProducts();
-  } else {
-    // Show skeleton UI if no cache
-    const grids = document.querySelectorAll('.product-grid');
-    grids.forEach(grid => {
-      grid.innerHTML = Array(4).fill().map(() => `
-        <div class="card product-card skeleton fade-up" style="min-height:350px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: pulse 1.5s infinite; border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"></div>
-      `).join('');
-    });
-    
-    // Add keyframes if not present
-    if (!document.getElementById('skeleton-styles')) {
-      const style = document.createElement('style');
-      style.id = 'skeleton-styles';
-      style.innerHTML = `@keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`;
-      document.head.appendChild(style);
+  // 1. Immediately load fallback if no cache exists
+  if (!cachedProducts || cachedProducts.length === 0) {
+    try {
+      const fallbackRes = await fetch('data/products.json');
+      if (fallbackRes.ok) {
+        const fallbackData = await fallbackRes.json();
+        const validProducts = Array.isArray(fallbackData) ? fallbackData : (fallbackData.products || []);
+        if (validProducts && validProducts.length > 0) {
+          localStorage.setItem('wishzy_products', JSON.stringify(validProducts));
+          cachedProducts = validProducts;
+        }
+      }
+    } catch(e) {
+      console.error('Failed to load initial fallback products:', e);
     }
   }
 
-  // Asynchronous fetch
+  // 2. Render whatever we have (cache or just-loaded fallback)
+  if (cachedProducts && cachedProducts.length > 0) {
+    if (window.renderProducts) window.renderProducts();
+  }
+
+  // 3. Asynchronously fetch live data from Shopify proxy
   WishzyStore.fetchProducts().then(success => {
     if (success && window.renderProducts) {
-      // Re-render when valid data arrives (either live or fallback)
+      // 4. Silently re-render with fresh data once the API responds
       window.renderProducts();
     }
   });
