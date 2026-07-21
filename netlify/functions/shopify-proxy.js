@@ -10,7 +10,8 @@ exports.handler = async (event, context) => {
     return { statusCode: 200, headers, body: 'OK' };
   }
 
-  if (event.httpMethod !== 'POST') {
+  // Allow both GET and POST
+  if (event.httpMethod !== 'POST' && event.httpMethod !== 'GET') {
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
@@ -50,8 +51,17 @@ exports.handler = async (event, context) => {
   };
 
   try {
-    const body = JSON.parse(event.body);
-    const { action, payload } = body;
+    let action, payload;
+
+    if (event.httpMethod === 'GET') {
+      // Default GET to 'get_products'
+      action = 'get_products';
+      payload = event.queryStringParameters || {};
+    } else {
+      const body = JSON.parse(event.body);
+      action = body.action;
+      payload = body.payload;
+    }
 
     if (action === 'test') {
       const resolvedToken = await resolveAccessToken();
@@ -78,7 +88,12 @@ exports.handler = async (event, context) => {
       const response = await fetch(endpoint);
       const data = await response.json();
       if (!response.ok) throw new Error(data.errors || response.statusText);
-      return { statusCode: 200, headers, body: JSON.stringify({ success: true, products: data.products }) };
+      
+      const responseHeaders = {
+        ...headers,
+        'Cache-Control': 's-maxage=1, stale-while-revalidate=59'
+      };
+      return { statusCode: 200, headers: responseHeaders, body: JSON.stringify({ success: true, products: data.products }) };
     }
 
     if (action === 'push_order') {

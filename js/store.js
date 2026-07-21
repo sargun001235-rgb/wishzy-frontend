@@ -230,20 +230,20 @@ const WishzyStore = (() => {
     get: (key, fallback = null) => {
       try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
     },
-    set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+    set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch { } },
   };
 
   /* Initialize products if not already stored */
-  if (!LS.get('wishzy_products')) LS.set('wishzy_products', DEFAULT_PRODUCTS);
-  if (!LS.get('wishzy_cart'))     LS.set('wishzy_cart', []);
-  if (!LS.get('wishzy_orders'))   LS.set('wishzy_orders', []);
+  if (!LS.get('wishzy_products')) LS.set('wishzy_products', []); // Init empty instead of DEFAULT_PRODUCTS
+  if (!LS.get('wishzy_cart')) LS.set('wishzy_cart', []);
+  if (!LS.get('wishzy_orders')) LS.set('wishzy_orders', []);
   if (!LS.get('wishzy_wishlist')) LS.set('wishzy_wishlist', []);
 
   /* ── PRODUCTS ─────────────────────────────────────────────── */
   const getProducts = (filter = {}) => {
     let products = LS.get('wishzy_products', []);
     if (filter.category) products = products.filter(p => p.categorySlug === filter.category);
-    if (filter.search)   products = products.filter(p => p.title.toLowerCase().includes(filter.search.toLowerCase()));
+    if (filter.search) products = products.filter(p => p.title.toLowerCase().includes(filter.search.toLowerCase()));
     return products;
   };
   const getProductById = (id) => getProducts().find(p => p.id === id);
@@ -271,31 +271,27 @@ const WishzyStore = (() => {
   /* ── SHOPIFY PUBLIC JSON SYNC ─────────────────────────────── */
   const fetchProductsFromJson = async () => {
     try {
-      // Get URL from local storage (for admin) or default to the live store for global users
-      let shopifyUrl = localStorage.getItem('wishzy_shopify_url') || 'joyroo.myshopify.com';
-      shopifyUrl = shopifyUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '');
-      
-      // Append cache-buster so clients always fetch fresh products directly from Shopify
-      let endpoint = `https://${shopifyUrl}/products.json?limit=250&t=${new Date().getTime()}`;
-      
-      const response = await fetch(endpoint);
-      if (!response.ok) throw new Error('Failed to fetch public products.json');
-      
+      // Fetch directly from our serverless proxy for optimistic rendering
+      let endpoint = `/api/shopify-proxy?t=${Date.now()}`;
+
+      const response = await fetch(endpoint, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Failed to fetch proxy products');
+
       const data = await response.json();
       if (!data.products) return false;
-      
+
       const importedProducts = data.products.map(p => {
         const variant = p.variants && p.variants[0];
         const price = variant ? parseFloat(variant.price) : 0;
         const comparePrice = variant && variant.compare_at_price ? parseFloat(variant.compare_at_price) : price;
         const images = p.images ? p.images.map(img => img.src) : [];
-        
+
         return {
           id: p.id.toString(),
           title: p.title,
           price: price,
           originalPrice: comparePrice,
-          categorySlug: 'lifestyle', 
+          categorySlug: 'lifestyle',
           category: p.product_type || 'Lifestyle',
           badge: null,
           inStock: variant ? variant.available ?? true : true,
@@ -479,9 +475,35 @@ const WishzyStore = (() => {
 window.WishzyStore = WishzyStore;
 
 // Auto-sync products on load for all users
-WishzyStore.fetchProductsFromJson().then(success => {
-  if (success && window.renderProducts) {
-    // If we are on index/collections and they have a render function, re-render
-    window.renderProducts();
+document.addEventListener('DOMContentLoaded', () => {
+  const cachedProducts = WishzyStore.getProducts();
+  
+  if (cachedProducts && cachedProducts.length > 0) {
+    // Optimistic render from cache immediately
+    if (window.renderProducts) window.renderProducts();
+  } else {
+    // Show skeleton UI if no cache
+    const grids = document.querySelectorAll('.product-grid');
+    grids.forEach(grid => {
+      grid.innerHTML = Array(4).fill().map(() => `
+        <div class="card product-card skeleton fade-up" style="min-height:350px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: pulse 1.5s infinite; border-radius: 12px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"></div>
+      `).join('');
+    });
+    
+    // Add keyframes if not present
+    if (!document.getElementById('skeleton-styles')) {
+      const style = document.createElement('style');
+      style.id = 'skeleton-styles';
+      style.innerHTML = `@keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`;
+      document.head.appendChild(style);
+    }
   }
+
+  // Asynchronous fetch
+  WishzyStore.fetchProductsFromJson().then(success => {
+    if (success && window.renderProducts) {
+      // Re-render when fresh data arrives
+      window.renderProducts();
+    }
+  });
 });
