@@ -18,11 +18,30 @@ export default async function handler(req, res) {
     }
 
     const shopifyDomain = process.env.SHOPIFY_STORE_URL || 'joyroo.myshopify.com';
-    const shopifyToken = process.env.SHOPIFY_ADMIN_API_TOKEN;
+    const clientId = process.env.SHOPIFY_CLIENT_ID;
+    const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
 
-    if (!shopifyToken) {
-       return res.status(500).json({ success: false, error: 'Missing Shopify Admin Token' });
+    if (!clientId || !clientSecret) {
+       return res.status(500).json({ success: false, error: 'Missing Shopify Client ID or Secret in environment variables' });
     }
+
+    // 2026 Shopify Update: Fetch short-lived token via Client Credentials Grant
+    const tokenRes = await fetch(`https://${shopifyDomain}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'client_credentials'
+      })
+    });
+
+    if (!tokenRes.ok) {
+       return res.status(500).json({ success: false, error: 'Failed to authenticate with Shopify using Client Credentials' });
+    }
+
+    const tokenData = await tokenRes.json();
+    const shopifyToken = tokenData.access_token;
 
     const cleanOrderNumber = orderNumber.toString().replace('#', '');
     const shopifyUrl = `https://${shopifyDomain}/admin/api/2024-01/orders.json?name=${cleanOrderNumber}&status=any`;
