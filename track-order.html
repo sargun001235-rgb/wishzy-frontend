@@ -101,41 +101,46 @@
 <script src="js/store.js"></script>
 <script src="js/partials.js"></script>
 <script src="js/ui.js"></script>
-<script>
-document.getElementById('track-form').addEventListener('submit', (e) => {
+// Pre-fill from URL params (e.g. from WhatsApp link or Account page)
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('id')) document.getElementById('t-orderid').value = urlParams.get('id');
+if (urlParams.get('phone')) document.getElementById('t-mobile').value = urlParams.get('phone');
+if (urlParams.get('email')) document.getElementById('t-mobile').value = urlParams.get('email');
+
+document.getElementById('track-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const S = window.WishzyStore;
-  const orderId = document.getElementById('t-orderid').value.trim().toUpperCase();
+  const orderId = document.getElementById('t-orderid').value.trim();
   const mobile = document.getElementById('t-mobile').value.trim();
   const resultEl = document.getElementById('track-result');
   const btn = document.getElementById('track-btn');
 
   btn.disabled = true;
-  btn.textContent = '⏳ Searching...';
+  btn.textContent = '⏳ Searching Live...';
 
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.textContent = '📦 Track My Order';
-
-    const order = S.getOrderById(orderId);
-
-    if (!order || order.customer.mobile !== mobile) {
-      resultEl.innerHTML = `
-        <div class="card" style="padding:var(--space-xl);border-color:var(--clr-error);background:rgba(192,57,43,0.04);margin-bottom:var(--space-lg)">
-          <div style="text-align:center">
-            <div style="font-size:2.5rem;margin-bottom:var(--space-md)">❌</div>
-            <h3 class="h3 mb-sm" style="color:var(--clr-error)">Order Not Found</h3>
-            <p class="text-muted">We couldn't find an order with that ID and mobile number. Please check your details and try again.</p>
-            <a href="contact.html" class="btn btn--outline mt-lg" style="font-size:0.875rem">Contact Support</a>
-          </div>
-        </div>`;
-      resultEl.classList.add('show');
-      return;
+  try {
+    const response = await fetch('/api/orders/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderNumber: orderId, identifier: mobile })
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.error);
     }
-
-    // Determine step from status
+    
+    const order = data.order;
+    
+    // Determine timeline step
+    let currentStep = 0; // Order Placed
+    if (order.financial_status === 'paid' || order.financial_status === 'partially_paid') currentStep = 1; // Processing
+    if (order.fulfillment_status === 'fulfilled') currentStep = 2; // Shipped
+    
+    // In a real courier integration, we'd check courier webhooks for out for delivery / delivered
+    // For now, if fulfilled, mark as shipped.
+    
     const statusSteps = ['Confirmed', 'Processing', 'Shipped', 'Out for Delivery', 'Delivered'];
-    const currentStep = statusSteps.indexOf(order.status);
     const icons = ['✅', '📦', '🚚', '🛵', '🏠'];
 
     const stepsHTML = statusSteps.map((s, i) => {
@@ -148,34 +153,74 @@ document.getElementById('track-form').addEventListener('submit', (e) => {
         </div>`;
     }).join('');
 
+    const customerName = order.customer ? order.customer.first_name : 'Customer';
+    const totalAmount = order.total_price;
+    const itemsCount = order.line_items.reduce((acc, item) => acc + item.quantity, 0);
+
+    let trackingHtml = '';
+    if (order.fulfillments && order.fulfillments.length > 0) {
+       const f = order.fulfillments[0];
+       trackingHtml = `
+         <div style="margin-top:var(--space-md); padding:var(--space-md); background:rgba(0,0,0,0.03); border-radius:var(--radius-sm);">
+           <div class="fw-600 mb-xs">🚚 Shipping Information</div>
+           <div class="text-sm text-muted">Courier: ${f.tracking_company || 'Standard'}</div>
+           <div class="text-sm text-muted">Tracking ID: <span style="font-family:monospace;font-weight:bold">${f.tracking_number}</span></div>
+           ${f.tracking_url ? `<a href="${f.tracking_url}" target="_blank" class="btn btn--outline mt-sm" style="padding:0.25rem 0.5rem;font-size:0.75rem">Track on Courier Website</a>` : ''}
+         </div>
+       `;
+    }
+
     resultEl.innerHTML = `
       <div class="card" style="padding:var(--space-xl);margin-bottom:var(--space-lg)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:var(--space-md);margin-bottom:var(--space-xl)">
           <div>
-            <div class="caption text-muted mb-sm">Order ID</div>
-            <div class="fw-700" style="font-family:monospace;font-size:1.1rem;letter-spacing:0.05em">${order.id}</div>
+            <div class="caption text-muted mb-sm">Shopify Order</div>
+            <div class="fw-700" style="font-family:monospace;font-size:1.1rem;letter-spacing:0.05em">#${order.order_number}</div>
           </div>
-          <span class="pill pill--${order.status === 'Delivered' ? 'success' : 'info'}">${order.status === 'Delivered' ? '✅' : '🔄'} ${order.status}</span>
+          <span class="pill pill--${order.fulfillment_status === 'fulfilled' ? 'success' : 'info'}">${order.fulfillment_status === 'fulfilled' ? '✅ Fulfilled' : '🔄 Unfulfilled'}</span>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-lg);margin-bottom:var(--space-xl);padding:var(--space-lg);background:var(--clr-bg-alt);border-radius:var(--radius-md)">
-          <div><div class="caption text-muted mb-xs">Customer</div><div class="fw-600">${order.customer.name}</div></div>
-          <div><div class="caption text-muted mb-xs">Order Date</div><div class="fw-600">${new Date(order.date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div></div>
-          <div><div class="caption text-muted mb-xs">Items</div><div class="fw-600">${order.items.length} item(s)</div></div>
-          <div><div class="caption text-muted mb-xs">Total (COD)</div><div class="fw-600 text-accent">${S.formatPrice(order.total)}</div></div>
+          <div><div class="caption text-muted mb-xs">Customer</div><div class="fw-600">${customerName}</div></div>
+          <div><div class="caption text-muted mb-xs">Order Date</div><div class="fw-600">${new Date(order.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div></div>
+          <div><div class="caption text-muted mb-xs">Items</div><div class="fw-600">${itemsCount} item(s)</div></div>
+          <div><div class="caption text-muted mb-xs">Total</div><div class="fw-600 text-accent">₹${totalAmount}</div></div>
         </div>
 
         <div>
-          <div class="fw-600 mb-lg">Delivery Status</div>
+          <div class="fw-600 mb-lg">Live Delivery Status</div>
           <div class="timeline">${stepsHTML}</div>
+          ${trackingHtml}
         </div>
       </div>`;
 
     resultEl.classList.add('show');
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    window.WishzyUI?.toast('Order found! ✅', 'success');
-  }, 1000);
+    window.WishzyUI?.toast('Order synced live from Shopify! ✅', 'success');
+
+  } catch (error) {
+    resultEl.innerHTML = `
+      <div class="card" style="padding:var(--space-xl);border-color:var(--clr-error);background:rgba(192,57,43,0.04);margin-bottom:var(--space-lg)">
+        <div style="text-align:center">
+          <div style="font-size:2.5rem;margin-bottom:var(--space-md)">❌</div>
+          <h3 class="h3 mb-sm" style="color:var(--clr-error)">${error.message || 'Order Not Found'}</h3>
+          <p class="text-muted">We couldn't find an order matching that ID and mobile/email. Please check your details and try again.</p>
+          <a href="contact.html" class="btn btn--outline mt-lg" style="font-size:0.875rem">Contact Support</a>
+        </div>
+      </div>`;
+    resultEl.classList.add('show');
+    window.WishzyUI?.toast('Error tracking order.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '📦 Track My Order';
+  }
 });
-</script>
+
+// Auto-trigger search if URL params are present
+if (urlParams.get('id') && (urlParams.get('phone') || urlParams.get('email'))) {
+  setTimeout(() => {
+    document.getElementById('track-btn').click();
+  }, 500);
+}
 </body>
 </html>

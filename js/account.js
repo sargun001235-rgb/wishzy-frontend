@@ -62,10 +62,10 @@ const WishzyAccount = (() => {
     listEl.innerHTML = '<p style="text-align:center;padding:20px;color:var(--clr-muted)">Fetching live details from Shopify...</p>';
 
     try {
-      const response = await fetch('/api/shopify-proxy', {
+      const response = await fetch('/api/orders/customer-orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get_customer_orders', payload: { phone: currentUserPhone } })
+        body: JSON.stringify({ identifier: currentUserPhone })
       });
       
       if (!response.ok) throw new Error('Failed to fetch orders');
@@ -73,9 +73,6 @@ const WishzyAccount = (() => {
       
       if (data.orders && data.orders.length > 0) {
         renderOrders(data.orders);
-        // Opportunistically save the latest name if available in the order
-        const latestName = data.orders[0].name; // this is the order number actually e.g. #1001
-      } else {
         // Fallback to local storage orders if backend fails or has no record
         const localOrders = S.getOrders().filter(o => o.customer.mobile === currentUserPhone);
         if(localOrders.length > 0) {
@@ -102,31 +99,26 @@ const WishzyAccount = (() => {
     const listEl = document.getElementById('orders-list');
     
     listEl.innerHTML = orders.map(order => {
-      const date = new Date(order.createdAt).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
-      const total = order.totalPriceSet?.shopMoney?.amount || 0;
-      const fStatus = order.displayFulfillmentStatus === 'FULFILLED' ? 'Shipped' : (order.displayFulfillmentStatus || 'Processing');
-      const pStatus = order.displayFinancialStatus || 'Pending';
+      const date = new Date(order.created_at).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
+      const total = order.total_price || 0;
+      const fStatus = order.fulfillment_status === 'fulfilled' ? 'Shipped' : (order.fulfillment_status || 'Processing');
       
       let trackingHtml = '';
       if (order.fulfillments && order.fulfillments.length > 0) {
-        const tracking = order.fulfillments[0].trackingInfo;
-        if (tracking && tracking.length > 0) {
-          const tInfo = tracking[0];
-          trackingHtml = `
-            <div style="margin-top:15px;padding:12px;background:var(--clr-bg);border-radius:8px;border:1px dashed var(--clr-primary)">
-              <div style="font-size:0.8rem;color:var(--clr-muted);margin-bottom:4px">Tracking Number: <strong style="color:var(--clr-text)">${tInfo.number}</strong></div>
-              ${tInfo.url ? `<a href="${tInfo.url}" target="_blank" class="btn btn--primary" style="padding:6px 12px;font-size:0.8rem;display:inline-block">Track Package 🚚</a>` : ''}
-            </div>
-          `;
-        }
+        const tracking = order.fulfillments[0];
+        trackingHtml = `
+          <div style="margin-top:15px;padding:12px;background:var(--clr-bg);border-radius:8px;border:1px dashed var(--clr-primary)">
+            <div style="font-size:0.8rem;color:var(--clr-muted);margin-bottom:4px">Tracking Number: <strong style="color:var(--clr-text)">${tracking.tracking_number || 'N/A'}</strong></div>
+            ${tracking.tracking_url ? `<a href="${tracking.tracking_url}" target="_blank" class="btn btn--primary" style="padding:6px 12px;font-size:0.8rem;display:inline-block">Track via Courier 🚚</a>` : ''}
+          </div>
+        `;
       }
 
-      const itemsHtml = order.lineItems.edges.map(e => `
+      const itemsHtml = order.line_items.map(item => `
         <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-          ${e.node.image?.url ? `<img src="${e.node.image.url}" style="width:40px;height:40px;border-radius:6px;object-fit:cover">` : ''}
           <div style="font-size:0.85rem;line-height:1.3">
-            <div style="color:var(--clr-text)">${e.node.title}</div>
-            <div style="color:var(--clr-muted)">Qty: ${e.node.quantity}</div>
+            <div style="color:var(--clr-text)">${item.title}</div>
+            <div style="color:var(--clr-muted)">Qty: ${item.quantity}</div>
           </div>
         </div>
       `).join('');
@@ -135,7 +127,7 @@ const WishzyAccount = (() => {
         <div style="padding:20px;border:1px solid var(--clr-border);border-radius:12px;margin-bottom:15px">
           <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:12px">
             <div>
-              <div style="font-weight:700;color:var(--clr-text)">Order ${order.name}</div>
+              <div style="font-weight:700;color:var(--clr-text)">Order #${order.order_number}</div>
               <div style="font-size:0.8rem;color:var(--clr-muted)">${date}</div>
             </div>
             <div style="text-align:right">
@@ -145,6 +137,9 @@ const WishzyAccount = (() => {
           </div>
           ${itemsHtml}
           ${trackingHtml}
+          <div style="margin-top:15px">
+            <a href="track-order.html?id=${order.order_number}&phone=${encodeURIComponent(currentUserPhone)}" class="btn btn--outline" style="width:100%;font-size:0.85rem">Track This Order Live 📦</a>
+          </div>
         </div>
       `;
     }).join('');
