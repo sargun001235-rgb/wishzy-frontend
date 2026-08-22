@@ -116,9 +116,14 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Shopify Response:", responseData);
 
         if (responseData.ok && responseData.data?.order) {
-          localStorage.removeItem('cart');
-          localStorage.removeItem('wishzy_cart');
-          alert("🎉 Order Placed Successfully! Order ID: " + responseData.data.order.name);
+          const shopifyOrderId = responseData.data.order.name; // e.g. #1005
+          if (window.WishzyStore) {
+             window.WishzyStore.placeOrder({ name, mobile, email }, shopifyOrderId);
+          } else {
+             localStorage.removeItem('cart');
+             localStorage.removeItem('wishzy_cart');
+          }
+          alert("🎉 Order Placed Successfully! Order ID: " + shopifyOrderId);
           window.location.href = '/';
         } else {
           alert("Shopify Error: " + (responseData.data?.errors ? JSON.stringify(responseData.data.errors) : "Failed to place order"));

@@ -174,12 +174,12 @@ const WishzyStore = (() => {
   const getOrders = () => LS.get('wishzy_orders', []);
   const getOrderById = (id) => getOrders().find(o => o.id === id);
 
-  const placeOrder = (customerData) => {
+  const placeOrder = (customerData, shopifyOrderId = null) => {
     const cart = getCart();
     if (!cart.length) return null;
     const totals = getCartTotals();
     const order = {
-      id: 'WZ-' + Date.now().toString(36).toUpperCase(),
+      id: shopifyOrderId || ('WZ-' + Date.now().toString(36).toUpperCase()),
       date: new Date().toISOString(),
       status: 'Confirmed',
       paymentMethod: 'Cash on Delivery',

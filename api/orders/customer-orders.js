@@ -44,15 +44,23 @@ export default async function handler(req, res) {
     const tokenData = await tokenRes.json();
     const shopifyToken = tokenData.access_token;
 
-    const searchUrl = `https://${shopifyDomain}/admin/api/2024-01/customers/search.json?query=${encodeURIComponent(identifier)}`;
+    const cleanPhone = identifier.replace(/\D/g, '');
     
-    const customerRes = await fetch(searchUrl, {
-      headers: { 'X-Shopify-Access-Token': shopifyToken }
-    });
-    
+    // First try searching exactly
+    let searchUrl = `https://${shopifyDomain}/admin/api/2024-01/customers/search.json?query=${encodeURIComponent(identifier)}`;
+    let customerRes = await fetch(searchUrl, { headers: { 'X-Shopify-Access-Token': shopifyToken } });
     if (!customerRes.ok) throw new Error('Failed to query Shopify customers');
+    let customerData = await customerRes.json();
     
-    const customerData = await customerRes.json();
+    // If no customers found and it's a phone number, try searching with wildcard
+    if ((!customerData.customers || customerData.customers.length === 0) && cleanPhone) {
+      searchUrl = `https://${shopifyDomain}/admin/api/2024-01/customers/search.json?query=phone:*${cleanPhone}*`;
+      customerRes = await fetch(searchUrl, { headers: { 'X-Shopify-Access-Token': shopifyToken } });
+      if (customerRes.ok) {
+        customerData = await customerRes.json();
+      }
+    }
+
     if (!customerData.customers || customerData.customers.length === 0) {
       return res.status(200).json({ success: true, orders: [] });
     }

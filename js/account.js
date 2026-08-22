@@ -141,14 +141,14 @@ const WishzyAccount = (() => {
     let html = '<div style="margin-bottom:15px; font-size:0.85rem; color:#f39c12;">Showing local device history (live sync failed).</div>';
     
     orders.forEach(order => {
-      const date = new Date(order.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-      const itemsCount = order.cart.reduce((acc, item) => acc + item.qty, 0);
+      const date = new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      const itemsCount = (order.items || []).reduce((acc, item) => acc + (item.qty || item.quantity || 1), 0);
       
       html += `
         <div class="card" style="padding:var(--space-lg); margin-bottom:var(--space-md); border:1px dashed var(--clr-border);">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:var(--space-md);">
             <div>
-              <div class="fw-700" style="font-size:1.1rem;">Order #${order.orderId}</div>
+              <div class="fw-700" style="font-size:1.1rem;">Order ${String(order.id).startsWith('#') ? '' : '#'}${order.id}</div>
               <div class="caption text-muted">${date}</div>
             </div>
             <span class="pill pill--info">Local Pending</span>
@@ -157,7 +157,7 @@ const WishzyAccount = (() => {
             <div><span class="caption text-muted block mb-xs">Items</span><span class="fw-600">${itemsCount}</span></div>
             <div><span class="caption text-muted block mb-xs">Total Amount</span><span class="fw-600 text-accent">₹${order.total}</span></div>
           </div>
-          <a href="track-order.html?id=${order.orderId}&phone=${currentUserPhone}" class="btn btn--outline btn--sm" style="width:100%; text-align:center;">
+          <a href="track-order.html?id=${String(order.id).replace('#', '')}&phone=${currentUserPhone}" class="btn btn--outline btn--sm" style="width:100%; text-align:center;">
             Track Order Live 📦
           </a>
         </div>
