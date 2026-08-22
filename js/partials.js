@@ -30,6 +30,9 @@ const WishzyPartials = (() => {
           <a href="account.html" class="nav__icon-btn" aria-label="Account" title="My Account">
             👤
           </a>
+          <a href="track-order.html" class="nav__icon-btn" aria-label="Track Order" title="Track Order">
+            📦
+          </a>
           <a href="cart.html" class="nav__icon-btn" aria-label="Cart">
             🛒 <span class="nav__cart-badge" id="nav-cart-count">0</span>
           </a>

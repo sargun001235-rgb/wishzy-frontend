@@ -72,8 +72,10 @@ const WishzyAccount = (() => {
       const data = await response.json();
       
       if (data.orders && data.orders.length > 0) {
+        // Success! Render Shopify orders and DO NOT overwrite with empty local storage!
         renderOrders(data.orders);
-        // Fallback to local storage orders if backend fails or has no record
+      } else {
+        // No orders in Shopify, check local storage as fallback
         const localOrders = S.getOrders().filter(o => o.customer.mobile === currentUserPhone);
         if(localOrders.length > 0) {
            renderLocalOrders(localOrders);
@@ -83,7 +85,7 @@ const WishzyAccount = (() => {
       }
     } catch (e) {
       console.error(e);
-      // Fallback to local
+      // Backend failed, fallback to local
       const localOrders = S.getOrders().filter(o => o.customer.mobile === currentUserPhone);
       if(localOrders.length > 0) {
          renderLocalOrders(localOrders);
@@ -98,84 +100,71 @@ const WishzyAccount = (() => {
   const renderOrders = (orders) => {
     const listEl = document.getElementById('orders-list');
     
-    listEl.innerHTML = orders.map(order => {
-      const date = new Date(order.created_at).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
-      const total = order.total_price || 0;
-      const fStatus = order.fulfillment_status === 'fulfilled' ? 'Shipped' : (order.fulfillment_status || 'Processing');
+    let html = '';
+    orders.forEach(order => {
+      const date = new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      const itemsCount = order.line_items ? order.line_items.reduce((acc, item) => acc + item.quantity, 0) : 0;
       
-      let trackingHtml = '';
-      if (order.fulfillments && order.fulfillments.length > 0) {
-        const tracking = order.fulfillments[0];
-        trackingHtml = `
-          <div style="margin-top:15px;padding:12px;background:var(--clr-bg);border-radius:8px;border:1px dashed var(--clr-primary)">
-            <div style="font-size:0.8rem;color:var(--clr-muted);margin-bottom:4px">Tracking Number: <strong style="color:var(--clr-text)">${tracking.tracking_number || 'N/A'}</strong></div>
-            ${tracking.tracking_url ? `<a href="${tracking.tracking_url}" target="_blank" class="btn btn--primary" style="padding:6px 12px;font-size:0.8rem;display:inline-block">Track via Courier 🚚</a>` : ''}
-          </div>
-        `;
+      // Determine status pill
+      let statusHtml = '<span class="pill pill--warning">🔄 Processing</span>';
+      if (order.fulfillment_status === 'fulfilled') {
+        statusHtml = '<span class="pill pill--success">✅ Fulfilled</span>';
+      } else if (order.cancelled_at) {
+        statusHtml = '<span class="pill pill--error">❌ Cancelled</span>';
       }
 
-      const itemsHtml = order.line_items.map(item => `
-        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-          <div style="font-size:0.85rem;line-height:1.3">
-            <div style="color:var(--clr-text)">${item.title}</div>
-            <div style="color:var(--clr-muted)">Qty: ${item.quantity}</div>
-          </div>
-        </div>
-      `).join('');
-
-      return `
-        <div style="padding:20px;border:1px solid var(--clr-border);border-radius:12px;margin-bottom:15px">
-          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:12px">
+      html += `
+        <div class="card" style="padding:var(--space-lg); margin-bottom:var(--space-md); border:1px solid var(--clr-border);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:var(--space-md); flex-wrap:wrap; gap:10px;">
             <div>
-              <div style="font-weight:700;color:var(--clr-text)">Order #${order.order_number}</div>
-              <div style="font-size:0.8rem;color:var(--clr-muted)">${date}</div>
+              <div class="fw-700" style="font-size:1.1rem; color:var(--clr-text)">Order #${order.order_number}</div>
+              <div class="caption text-muted">${date}</div>
             </div>
-            <div style="text-align:right">
-              <div style="font-weight:700;color:var(--clr-primary)">₹${parseFloat(total).toLocaleString('en-IN')}</div>
-              <span style="display:inline-block;padding:2px 8px;background:rgba(123,97,255,0.1);color:var(--clr-primary);border-radius:20px;font-size:0.7rem;font-weight:600;margin-top:4px">${fStatus}</span>
-            </div>
+            ${statusHtml}
           </div>
-          ${itemsHtml}
-          ${trackingHtml}
-          <div style="margin-top:15px">
-            <a href="track-order.html?id=${order.order_number}&phone=${encodeURIComponent(currentUserPhone)}" class="btn btn--outline" style="width:100%;font-size:0.85rem">Track This Order Live 📦</a>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-md); background:var(--clr-bg-alt); padding:var(--space-md); border-radius:var(--radius-sm); margin-bottom:var(--space-md);">
+            <div><span class="caption text-muted block mb-xs">Items</span><span class="fw-600">${itemsCount}</span></div>
+            <div><span class="caption text-muted block mb-xs">Total Amount</span><span class="fw-600 text-accent">₹${order.total_price}</span></div>
           </div>
+          <a href="track-order.html?id=${order.order_number}&phone=${currentUserPhone}" class="btn btn--outline btn--sm" style="width:100%; text-align:center;">
+            Track Order Live 📦
+          </a>
         </div>
       `;
-    }).join('');
+    });
+    
+    listEl.innerHTML = html;
   };
 
   const renderLocalOrders = (orders) => {
     const listEl = document.getElementById('orders-list');
-    listEl.innerHTML = orders.map(order => {
-      const date = new Date(order.date).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'});
-      const itemsHtml = order.items.map(item => `
-        <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
-          <img src="${item.images[0]}" style="width:40px;height:40px;border-radius:6px;object-fit:cover">
-          <div style="font-size:0.85rem;line-height:1.3">
-            <div style="color:var(--clr-text)">${item.title}</div>
-            <div style="color:var(--clr-muted)">Qty: ${item.qty}</div>
-          </div>
-        </div>
-      `).join('');
-
-      return `
-        <div style="padding:20px;border:1px solid var(--clr-border);border-radius:12px;margin-bottom:15px">
-          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:12px">
+    let html = '<div style="margin-bottom:15px; font-size:0.85rem; color:#f39c12;">Showing local device history (live sync failed).</div>';
+    
+    orders.forEach(order => {
+      const date = new Date(order.timestamp).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+      const itemsCount = order.cart.reduce((acc, item) => acc + item.qty, 0);
+      
+      html += `
+        <div class="card" style="padding:var(--space-lg); margin-bottom:var(--space-md); border:1px dashed var(--clr-border);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:var(--space-md);">
             <div>
-              <div style="font-weight:700;color:var(--clr-text)">Order ${order.id}</div>
-              <div style="font-size:0.8rem;color:var(--clr-muted)">${date}</div>
+              <div class="fw-700" style="font-size:1.1rem;">Order #${order.orderId}</div>
+              <div class="caption text-muted">${date}</div>
             </div>
-            <div style="text-align:right">
-              <div style="font-weight:700;color:var(--clr-primary)">₹${order.total.toLocaleString('en-IN')}</div>
-              <span style="display:inline-block;padding:2px 8px;background:rgba(123,97,255,0.1);color:var(--clr-primary);border-radius:20px;font-size:0.7rem;font-weight:600;margin-top:4px">${order.status}</span>
-            </div>
+            <span class="pill pill--info">Local Pending</span>
           </div>
-          ${itemsHtml}
-          <div style="margin-top:15px;font-size:0.8rem;color:var(--clr-muted)">Tracking info is syncing from Shopify...</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-md); background:var(--clr-bg-alt); padding:var(--space-md); border-radius:var(--radius-sm); margin-bottom:var(--space-md);">
+            <div><span class="caption text-muted block mb-xs">Items</span><span class="fw-600">${itemsCount}</span></div>
+            <div><span class="caption text-muted block mb-xs">Total Amount</span><span class="fw-600 text-accent">₹${order.total}</span></div>
+          </div>
+          <a href="track-order.html?id=${order.orderId}&phone=${currentUserPhone}" class="btn btn--outline btn--sm" style="width:100%; text-align:center;">
+            Track Order Live 📦
+          </a>
         </div>
       `;
-    }).join('');
+    });
+    
+    listEl.innerHTML = html;
   };
 
   return { init, login, logout, fetchOrders };

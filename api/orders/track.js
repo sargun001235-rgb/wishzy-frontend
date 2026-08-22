@@ -17,7 +17,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Missing order number or email/phone' });
     }
 
-    const shopifyDomain = process.env.SHOPIFY_STORE_URL || 'joyroo.myshopify.com';
+    const rawDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.SHOPIFY_STORE_URL || 'joyroo.myshopify.com';
+    const shopifyDomain = rawDomain.replace(/^https?:\/\//, '').replace(/\/$/, '');
     const clientId = process.env.SHOPIFY_CLIENT_ID;
     const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
 
