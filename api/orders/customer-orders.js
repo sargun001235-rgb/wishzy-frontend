@@ -57,17 +57,32 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, orders: [] });
     }
 
-    const customerId = customerData.customers[0].id;
+    let allOrders = [];
 
-    const ordersUrl = `https://${shopifyDomain}/admin/api/2024-01/customers/${customerId}/orders.json?status=any`;
-    const ordersRes = await fetch(ordersUrl, {
-      headers: { 'X-Shopify-Access-Token': shopifyToken }
-    });
+    for (const customer of customerData.customers) {
+      const ordersUrl = `https://${shopifyDomain}/admin/api/2024-01/customers/${customer.id}/orders.json?status=any`;
+      const ordersRes = await fetch(ordersUrl, {
+        headers: { 'X-Shopify-Access-Token': shopifyToken }
+      });
+      
+      if (ordersRes.ok) {
+        const ordersData = await ordersRes.json();
+        if (ordersData.orders) {
+          allOrders = allOrders.concat(ordersData.orders);
+        }
+      }
+    }
+
+    // Deduplicate orders by ID in case Shopify returned the same order multiple times
+    const uniqueOrdersMap = new Map();
+    for (const order of allOrders) {
+      uniqueOrdersMap.set(order.id, order);
+    }
     
-    if (!ordersRes.ok) throw new Error('Failed to query Shopify orders');
+    // Sort by created_at descending
+    const sortedOrders = Array.from(uniqueOrdersMap.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-    const ordersData = await ordersRes.json();
-    res.status(200).json({ success: true, orders: ordersData.orders });
+    res.status(200).json({ success: true, orders: sortedOrders });
 
   } catch (error) {
     console.error('Customer Orders API Error:', error);

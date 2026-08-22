@@ -34,7 +34,7 @@ const WishzyPartials = (() => {
             📦 <span class="hide-mobile">Track Order</span>
           </a>
           <a href="cart.html" class="nav__icon-btn" aria-label="Cart">
-            🛒 <span class="nav__cart-badge" id="nav-cart-count">0</span>
+            🛒 <span class="nav__cart-badge cart-badge" id="nav-cart-count">0</span>
           </a>
           <button class="nav__hamburger" id="hamburger" aria-label="Menu">
             <span></span><span></span><span></span>
