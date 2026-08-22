@@ -27,11 +27,11 @@ const WishzyPartials = (() => {
 
         <!-- Actions -->
         <div class="nav__actions">
-          <a href="account.html" class="nav__icon-btn" aria-label="Account" title="My Account">
-            👤
+          <a href="account.html" class="nav__text-btn" aria-label="Account" title="My Account">
+            👤 <span class="hide-mobile">Account</span>
           </a>
-          <a href="track-order.html" class="nav__icon-btn" aria-label="Track Order" title="Track Order">
-            📦
+          <a href="track-order.html" class="nav__text-btn" aria-label="Track Order" title="Track Order">
+            📦 <span class="hide-mobile">Track Order</span>
           </a>
           <a href="cart.html" class="nav__icon-btn" aria-label="Cart">
             🛒 <span class="nav__cart-badge" id="nav-cart-count">0</span>

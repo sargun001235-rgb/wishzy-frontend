@@ -207,6 +207,17 @@ ul, ol { list-style: none; }
   font-size: 1.1rem;
 }
 .nav__icon-btn:hover { background: var(--clr-bg-alt); }
+.nav__text-btn {
+  position: relative;
+  height: 40px; padding: 0 var(--space-sm);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--clr-text);
+  display: flex; align-items: center; gap: var(--space-xs);
+  transition: background var(--transition-fast);
+  font-size: 0.95rem; font-weight: 500;
+}
+.nav__text-btn:hover { background: var(--clr-bg-alt); }
 
 .cart-badge {
   position: absolute;
@@ -1006,4 +1017,10 @@ ul, ol { list-style: none; }
   .timeline { padding-left: 20px; }
   .timeline-dot { left: -20px; width: 16px; height: 16px; top: 6px; }
   .timeline::before { left: -12px; }
+}
+
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
 }
